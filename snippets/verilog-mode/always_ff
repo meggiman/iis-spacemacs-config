@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+#name : always_ff
+#key : always_ff
+#contributor : Manuel Eggimann
+# --
+always_ff @(${1:sens_list}) begin
+$0
+end
