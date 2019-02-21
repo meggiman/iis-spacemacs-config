@@ -68,6 +68,7 @@ This function should only modify configuration layer settings."
      major-modes
      rebox
      gtags
+     neotree
      (c-c++ :variables
             c-c++-enable-clang-support nil)
      ;; version-control
