@@ -1,0 +1,14 @@
+#+TITLE: Personal Spacemacs Configuration
+This repository contains my personal Spacemacs configuration for my daily work at ETH.
+* How to install
+ 1. Install a recent version of emacs (25.1+). See
+    [[https://www.gnu.org/software/emacs/][https://www.gnu.org/software/emacs/]] for instructions to do so.
+ 2. Install the latest Spacemacs
+    #+BEGIN_SRC shell
+    git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+    #+END_SRC
+ 3. Install the spacemacs configurations from this repository
+    #+BEGIN_SRC shell
+    git clone https://github.com/meggiman/iis-spacemacs-config.git ~/.spacemacs.d
+    #+END_SRC
+
