@@ -55,7 +55,7 @@ This function should only modify configuration layer settings."
      syntax-checking
      ;;spell-checking
      (latex :variables
-            latex-build-command "Makefile"
+            latex-build-command "LaTeX"
             spell-checking-enable-auto-dictionary t)
      org
      bibtex
@@ -660,6 +660,9 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex -synctex=1")
+ '(LaTeX-command-style
+   (quote
+    (("" "%(PDF)%(latex) %(file-line-error) -shell-escape  %(extraopts) %S%(PDFout)"))))
  '(evil-want-Y-yank-to-eol nil)
  '(org-agenda-files
    (quote
@@ -683,6 +686,9 @@ This function is called at the very end of Spacemacs initialization."
      ("" "amssymb" t nil)
      ("" "capt-of" nil nil)
      ("" "hyperref" nil nil))))
+ '(org-latex-pdf-process
+   (quote
+    ("%latex -shell-escape -interaction nonstopmode -output-directory %o %f" "%latex -shell-escape -interaction nonstopmode -output-directory %o %f" "%latex -shell-escape -interaction nonstopmode -output-directory %o %f")))
  '(package-selected-packages
    (quote
     (mscgen-mode org-ref key-chord helm-bibtex parsebib biblio biblio-core virtualenvwrapper ox-twbs ox-gfm flyspell-correct-helm flyspell-correct auto-dictionary realgud test-simple loc-changes load-relative xterm-color shell-pop pandoc-mode ox-pandoc ht multi-term eshell-z eshell-prompt-extras esh-help yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
