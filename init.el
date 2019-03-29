@@ -654,38 +654,62 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(LaTeX-command "latex -synctex=1")
+ '(LaTeX-command "latex-2016 -synctex=1")
+ '(TeX-command "tex-2016")
+ '(TeX-command-list
+   (quote
+    (("TeX" "%(PDF)%(tex) %(file-line-error) %`%(extraopts) %S%(PDFout)%(mode)%' %t" TeX-run-TeX nil
+      (plain-tex-mode texinfo-mode ams-tex-mode)
+      :help "Run plain TeX")
+     ("LaTeX" "%`%l%(mode)%' %T" TeX-run-TeX nil
+      (latex-mode doctex-mode)
+      :help "Run LaTeX")
+     ("Makeinfo" "makeinfo %(extraopts) %t" TeX-run-compile nil
+      (texinfo-mode)
+      :help "Run Makeinfo with Info output")
+     ("Makeinfo HTML" "makeinfo %(extraopts) --html %t" TeX-run-compile nil
+      (texinfo-mode)
+      :help "Run Makeinfo with HTML output")
+     ("AmSTeX" "amstex %(PDFout) %`%(extraopts) %S%(mode)%' %t" TeX-run-TeX nil
+      (ams-tex-mode)
+      :help "Run AMSTeX")
+     ("ConTeXt" "%(cntxcom) --once --texutil %(extraopts) %(execopts)%t" TeX-run-TeX nil
+      (context-mode)
+      :help "Run ConTeXt once")
+     ("ConTeXt Full" "%(cntxcom) %(extraopts) %(execopts)%t" TeX-run-TeX nil
+      (context-mode)
+      :help "Run ConTeXt until completion")
+     ("BibTeX" "bibtex-2016 %s" TeX-run-BibTeX nil t :help "Run BibTeX")
+     ("Biber" "biber-2016 %s" TeX-run-Biber nil t :help "Run Biber")
+     ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer")
+     ("Print" "%p" TeX-run-command t t :help "Print the file")
+     ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command)
+     ("File" "%(o?)dvips %d -o %f " TeX-run-dvips t t :help "Generate PostScript file")
+     ("Dvips" "%(o?)dvips %d -o %f " TeX-run-dvips nil t :help "Convert DVI file to PostScript")
+     ("Dvipdfmx" "dvipdfmx %d" TeX-run-dvipdfmx nil t :help "Convert DVI file to PDF with dvipdfmx")
+     ("Ps2pdf" "ps2pdf-2016 %f" TeX-run-ps2pdf nil t :help "Convert PostScript file to PDF")
+     ("Glossaries" "makeglossaries-2016 %s" TeX-run-command nil t :help "Run makeglossaries to create glossary file")
+     ("Index" "makeindex-2016 %s" TeX-run-index nil t :help "Run makeindex to create index file")
+     ("upMendex" "upmendex-2016 %s" TeX-run-index t t :help "Run upmendex to create index file")
+     ("Xindy" "texindy-2016 %s" TeX-run-command nil t :help "Run xindy to create index file")
+     ("Check" "lacheck-2016 %s" TeX-run-compile nil
+      (latex-mode)
+      :help "Check LaTeX file for correctness")
+     ("ChkTeX" "chktex-2016 -v6 %s" TeX-run-compile nil
+      (latex-mode)
+      :help "Check LaTeX file for common mistakes")
+     ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document")
+     ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files")
+     ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files")
+     ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
  '(evil-want-Y-yank-to-eol nil)
- '(org-agenda-files
+ '(org-latex-pdf-process
    (quote
-    ("/home/meggiman/org_notes/hd-computing.org" "/home/meggiman/org_notes/journal.org" "/home/meggiman/org_notes/meetings.org" "/home/meggiman/org_notes/pulp.org" "/home/meggiman/org_notes/pulpissimo_training.org" "/home/meggiman/org_notes/quicknotes.org" "/home/meggiman/org_notes/schedules.org" "/home/meggiman/org_notes/tasks.org")))
- '(org-image-actual-width nil)
- '(org-latex-caption-above nil)
- '(org-latex-default-packages-alist
-   (quote
-    (("AUTO" "inputenc" t
-      ("pdflatex"))
-     ("T1" "fontenc" t
-      ("pdflatex"))
-     ("" "graphicx" t nil)
-     ("" "grffile" t nil)
-     ("" "longtable" nil nil)
-     ("" "wrapfig" nil nil)
-     ("" "rotating" nil nil)
-     ("normalem" "ulem" t nil)
-     ("" "amsmath" t nil)
-     ("" "textcomp" t nil)
-     ("" "amssymb" t nil)
-     ("" "capt-of" nil nil)
-     ("" "hyperref" nil nil))))
+    ("pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f")))
  '(package-selected-packages
    (quote
-    (org-ref key-chord helm-bibtex parsebib biblio biblio-core virtualenvwrapper ox-twbs ox-gfm flyspell-correct-helm flyspell-correct auto-dictionary realgud test-simple loc-changes load-relative xterm-color shell-pop pandoc-mode ox-pandoc ht multi-term eshell-z eshell-prompt-extras esh-help yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
- '(spacemacs-theme-custom-colors (quote ((base . "#ffffff"))))
- '(verilog-indent-level-behavioral 2)
- '(verilog-indent-level-declaration 2)
- '(verilog-indent-level-directive 2)
- '(verilog-indent-level-module 2))
+    (yasnippet-snippets writeroom-mode web-mode synosaurus spaceline-all-the-icons pipenv paradox orgit org-ref pdf-tools org-mime org-brain magit-svn live-py-mode link-hint helm-xref helm-make git-timemachine git-link ggtags eyebrowse expand-region evil-unimpaired evil-nerd-commenter evil-matchit evil-magit editorconfig dumb-jump doom-modeline all-the-icons counsel-projectile counsel swiper ivy centered-cursor-mode auto-yasnippet aggressive-indent ace-window ace-link avy anzu flycheck company window-purpose rtags helm helm-core multiple-cursors magit-popup magit transient git-commit with-editor markdown-mode alert projectile pythonic haml-mode js2-mode powerline dash which-key evil org-plus-contrib hydra yapfify yaml-mode ws-butler wolfram-mode winum web-beautify volatile-highlights visual-fill-column virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit tablist symon string-inflection stan-mode spaceline smeargle slim-mode shrink-path scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pip-requirements persp-mode pcre2el password-generator pandoc-mode ox-pandoc overseer org-projectile org-present org-pomodoro org-download org-bullets open-junk-file nov neotree nameless mwim move-text mmm-mode minimap memoize matlab-mode markdown-toc magit-gitflow macrostep lorem-ipsum logcat log4e livid-mode kivy-mode key-chord json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode imenu-list hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bibtex helm-ag goto-chg google-translate google-c-style golden-ratio gnuplot gntp gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-messenger gh-md fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-org evil-numbers evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode eldoc-eval edit-server ebuild-mode dotenv-mode disaster diminish define-word cython-mode csv-mode company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format avy-zap auto-highlight-symbol auto-compile arduino-mode ace-jump-helm-line ac-ispell)))
+ '(spacemacs-theme-custom-colors (quote ((base . "#ffffff")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
