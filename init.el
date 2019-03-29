@@ -96,6 +96,10 @@ This function should only modify configuration layer settings."
                                                           :repo "dengste/minimap"))
                                       elf-mode
                                       figlet
+                                      (mscgen-mode :location (recipe
+                                                             :fetcher github
+                                                             :repo "thomsten/mscgen-mode"
+                                                             ))
                                       (boxes :location local)
                                       avy-zap
                                       virtualenvwrapper)
@@ -614,8 +618,9 @@ you should place your code here."
     ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
     ;; the tex code in a latex environment for latex export.
     (require 'ox-latex)
+    (require 'mscgen-mode)
     ;; Enable additional babel languages
-    (org-babel-do-load-languages 'org-babel-load-languages '((latex t) (shell t) (python t) (js t)))
+    (org-babel-do-load-languages 'org-babel-load-languages '((latex t) (shell t) (python t) (js t) (mscgen t)))
 
     (push "~/org_notes/lib" load-path)
 
@@ -655,7 +660,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex-2016 -synctex=1")
- '(TeX-command "tex-2016")
  '(TeX-command-list
    (quote
     (("TeX" "%(PDF)%(tex) %(file-line-error) %`%(extraopts) %S%(PDFout)%(mode)%' %t" TeX-run-TeX nil
@@ -670,7 +674,7 @@ This function is called at the very end of Spacemacs initialization."
      ("Makeinfo HTML" "makeinfo %(extraopts) --html %t" TeX-run-compile nil
       (texinfo-mode)
       :help "Run Makeinfo with HTML output")
-     ("AmSTeX" "amstex %(PDFout) %`%(extraopts) %S%(mode)%' %t" TeX-run-TeX nil
+     ("AmSTeX" "amstex-2016 %(PDFout) %`%(extraopts) %S%(mode)%' %t" TeX-run-TeX nil
       (ams-tex-mode)
       :help "Run AMSTeX")
      ("ConTeXt" "%(cntxcom) --once --texutil %(extraopts) %(execopts)%t" TeX-run-TeX nil
@@ -708,7 +712,7 @@ This function is called at the very end of Spacemacs initialization."
     ("pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f")))
  '(package-selected-packages
    (quote
-    (yasnippet-snippets writeroom-mode web-mode synosaurus spaceline-all-the-icons pipenv paradox orgit org-ref pdf-tools org-mime org-brain magit-svn live-py-mode link-hint helm-xref helm-make git-timemachine git-link ggtags eyebrowse expand-region evil-unimpaired evil-nerd-commenter evil-matchit evil-magit editorconfig dumb-jump doom-modeline all-the-icons counsel-projectile counsel swiper ivy centered-cursor-mode auto-yasnippet aggressive-indent ace-window ace-link avy anzu flycheck company window-purpose rtags helm helm-core multiple-cursors magit-popup magit transient git-commit with-editor markdown-mode alert projectile pythonic haml-mode js2-mode powerline dash which-key evil org-plus-contrib hydra yapfify yaml-mode ws-butler wolfram-mode winum web-beautify volatile-highlights visual-fill-column virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit tablist symon string-inflection stan-mode spaceline smeargle slim-mode shrink-path scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pip-requirements persp-mode pcre2el password-generator pandoc-mode ox-pandoc overseer org-projectile org-present org-pomodoro org-download org-bullets open-junk-file nov neotree nameless mwim move-text mmm-mode minimap memoize matlab-mode markdown-toc magit-gitflow macrostep lorem-ipsum logcat log4e livid-mode kivy-mode key-chord json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode imenu-list hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bibtex helm-ag goto-chg google-translate google-c-style golden-ratio gnuplot gntp gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-messenger gh-md fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-org evil-numbers evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode eldoc-eval edit-server ebuild-mode dotenv-mode disaster diminish define-word cython-mode csv-mode company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format avy-zap auto-highlight-symbol auto-compile arduino-mode ace-jump-helm-line ac-ispell)))
+    (mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(spacemacs-theme-custom-colors (quote ((base . "#ffffff")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
