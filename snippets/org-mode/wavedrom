@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+#name : Insert wavedrom illustration
+#key : wavedrom
+#contributor : Manuel Eggimann
+# --
+
+#+BEGIN_SRC json :tangle "${1:dst_path}.json" :results none :exports none
+
+#+END_SRC
+#+call: gen_wavedrom(src_path="$1.json") :exports None
+${2:
+#+CAPTION: ${3: caption text}}${4:
+#+ATTR_LATEX: ${5::width ${6:${7:0.5}\textwidth}} ${8::placement [${9:H}]}}${10:
+#+LABEL: ${11: fig:$1}}
+[[file:$1.svg]]
+$0
