@@ -33,7 +33,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(javascript
+   '(systemd
+     javascript
      html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -53,11 +54,12 @@ This function should only modify configuration layer settings."
      treemacs
      chrome
      syntax-checking
-     ;;spell-checking
+     (spell-checking :variables spell-checking-enable-by-default nil)
      (latex :variables
             latex-build-command "Makefile"
             spell-checking-enable-auto-dictionary t)
-     org
+     (org :variables
+          org-enable-bootstrap-support t)
      bibtex
      pandoc
      ;; (shell :variables
@@ -77,7 +79,7 @@ This function should only modify configuration layer settings."
      gtags
      neotree
      (c-c++ :variables
-            c-c++-enable-clang-support nil)
+            c-c++-enable-clang-support t)
      ;; version-control
      ascii-titles
      )
@@ -102,7 +104,9 @@ This function should only modify configuration layer settings."
                                                              ))
                                       (boxes :location local)
                                       avy-zap
-                                      virtualenvwrapper)
+                                      virtualenvwrapper
+                                      poporg
+                                      pocket-reader)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
