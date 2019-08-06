@@ -33,7 +33,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(javascript
+   '(systemd
+     javascript
      html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -57,7 +58,8 @@ This function should only modify configuration layer settings."
      (latex :variables
             latex-build-command "LaTeX"
             spell-checking-enable-auto-dictionary t)
-     org
+     (org :variables
+          org-enable-bootstrap-support t)
      bibtex
      pandoc
      ;; (shell :variables
@@ -77,7 +79,7 @@ This function should only modify configuration layer settings."
      gtags
      neotree
      (c-c++ :variables
-            c-c++-enable-clang-support nil)
+            c-c++-enable-clang-support t)
      ;; version-control
      ascii-titles
      )
@@ -102,7 +104,9 @@ This function should only modify configuration layer settings."
                                                              ))
                                       (boxes :location local)
                                       avy-zap
-                                      virtualenvwrapper)
+                                      virtualenvwrapper
+                                      poporg
+                                      pocket-reader)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
@@ -123,6 +127,8 @@ This function should only modify configuration layer settings."
 This function is called at the very beginning of Spacemacs startup,
 before layer configuration.
 It should only modify the values of Spacemacs settings."
+
+  (add-to-list 'load-path "~/.spacemacs.d/local")
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
@@ -550,18 +556,25 @@ you should place your code here."
   ;;Add auto-revert-mode to docview hook so the pdf preview updates upon rebuild
   ;;of the latex source.
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; flymd fix to use Firefox instead of chrome for Markdown live preview ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun my-flymd-browser-function (url)
+    (let ((browse-url-browser-function 'browse-url-firefox))
+      (browse-url url)))
+  (setq flymd-browser-open-function 'my-flymd-browser-function)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Enable usefull minor modes by default
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;(add-hook 'prog-mode-hook 'minimap-mode)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;(add-hook 'prog-mode-hook 'minimap-mode)
   (add-hook 'prog-mode-hook 'spacemacs/toggle-line-numbers-on)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Configuring Compilationto auto close *compilation* buffer after success  ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Configuring Compilationto auto close *compilation* buffer after success  ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Helper for compilation. Close the compilation window if
   ;; there was no error at all.
   (defun compilation-exit-autoclose (status code msg)
@@ -577,17 +590,17 @@ you should place your code here."
   (setq compilation-exit-message-function 'compilation-exit-autoclose)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Configuring org mode
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Configuring org mode
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (with-eval-after-load 'org
     (setq org-capture-templates
           '(("t" "New task in tasks.org" entry (file+headline "~/org_notes/tasks.org" "Inbox")
              "* TODO %?")
-            ("q" "New quick note with tags" entry (file "~/org_notes/quicknotes.org")
+            ("n" "New quick note with tags" entry (file "~/org_notes/quicknotes.org")
              "* %^{Title?} %^G\n %?")
             ("w" "Web site" entry
-             (file+headline "quicknotes.org" "Bookmarks")
+             (file+headline "~/org_notes/quicknotes.org" "Bookmarks")
              "* %a :website:%^G\n\n%U %?\n\n%:initial")
             ("s" "Weekly Schedule" entry
              (file+datetree "~/org_notes/schedules.org")
@@ -595,7 +608,7 @@ you should place your code here."
             ("m" "New meeting notes int meetings.org" entry (file+datetree "~/org_notes/meetings.org")
              "* %U - %^{Topic of the meeting?}%^G\n  %?" )
             ("j" "Journal" entry (file+datetree "~/org_notes/journal.org")
-             "* %?\n\tEntered on %U\n  %i")))
+             "* %?\n\tEntered on %U\n  %i" :clock-in t :clock-keep t)))
     ;; Ein "!" bedeutet Zeitstempel
     ;; Ein "@" bedeutet Notiz
     (setq org-todo-keywords
@@ -612,7 +625,7 @@ you should place your code here."
     (setq org-use-fast-todo-selection t)
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
-    (setq org-agenda-files (directory-files-recursively "~/org_notes/" "\.org$"))
+    (setq org-agenda-files (list "~/org_notes/"  "~/org-notes-private")))
     (setq org-download-method 'attach)
 
     ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
@@ -620,7 +633,7 @@ you should place your code here."
     (require 'ox-latex)
     (require 'mscgen-mode)
     ;; Enable additional babel languages
-    (org-babel-do-load-languages 'org-babel-load-languages '((latex t) (shell t) (python t) (js t) (mscgen t)))
+    (org-babel-do-load-languages 'org-babel-load-languages '((makefile t) (latex t) (shell t) (python t) (js t) (mscgen t)))
 
     (push "~/org_notes/lib" load-path)
 
@@ -642,13 +655,24 @@ you should place your code here."
     (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
     (setq org-image-actual-width (/ (display-pixel-width) 3)) ;; Set image size in org-mode to 1/3 of the display width
     (setq org-duration-format (quote h:mm))
-    ))
+
+    ;; Org protocol config
+     (require 'edit-server)
+    (edit-server-start)
+    (require 'org-protocol)
+    (require 'org-protocol-capture-html)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Load Poporg to use org mode for comment strings in other major modes.
+    (autoload 'poporg-dwim "poporg" nil t)
+    (global-set-key (kbd "C-c \"") 'poporg-dwim)
+    )
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Do not write anything past this comment. This is where Emacs will
   ;; auto-generate custom variable definitions.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
@@ -660,38 +684,64 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex -synctex=1")
- '(LaTeX-command-style
+ '(TeX-command-list
    (quote
-    (("" "%(PDF)%(latex) %(file-line-error) -shell-escape  %(extraopts) %S%(PDFout)"))))
+    (("TeX" "%(PDF)%(tex) %(file-line-error) %`%(extraopts) %S%(PDFout)%(mode)%' %t" TeX-run-TeX nil
+      (plain-tex-mode texinfo-mode ams-tex-mode)
+      :help "Run plain TeX")
+     ("LaTeX" "%`%l%(mode)%' %T" TeX-run-TeX nil
+      (latex-mode doctex-mode)
+      :help "Run LaTeX")
+     ("Makeinfo" "makeinfo %(extraopts) %t" TeX-run-compile nil
+      (texinfo-mode)
+      :help "Run Makeinfo with Info output")
+     ("Makeinfo HTML" "makeinfo %(extraopts) --html %t" TeX-run-compile nil
+      (texinfo-mode)
+      :help "Run Makeinfo with HTML output")
+     ("AmSTeX" "amstex-2016 %(PDFout) %`%(extraopts) %S%(mode)%' %t" TeX-run-TeX nil
+      (ams-tex-mode)
+      :help "Run AMSTeX")
+     ("ConTeXt" "%(cntxcom) --once --texutil %(extraopts) %(execopts)%t" TeX-run-TeX nil
+      (context-mode)
+      :help "Run ConTeXt once")
+     ("ConTeXt Full" "%(cntxcom) %(extraopts) %(execopts)%t" TeX-run-TeX nil
+      (context-mode)
+      :help "Run ConTeXt until completion")
+     ("BibTeX" "bibtex-2016 %s" TeX-run-BibTeX nil t :help "Run BibTeX")
+     ("Biber" "biber-2016 %s" TeX-run-Biber nil t :help "Run Biber")
+     ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer")
+     ("Print" "%p" TeX-run-command t t :help "Print the file")
+     ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command)
+     ("File" "%(o?)dvips %d -o %f " TeX-run-dvips t t :help "Generate PostScript file")
+     ("Dvips" "%(o?)dvips %d -o %f " TeX-run-dvips nil t :help "Convert DVI file to PostScript")
+     ("Dvipdfmx" "dvipdfmx %d" TeX-run-dvipdfmx nil t :help "Convert DVI file to PDF with dvipdfmx")
+     ("Ps2pdf" "ps2pdf-2016 %f" TeX-run-ps2pdf nil t :help "Convert PostScript file to PDF")
+     ("Glossaries" "makeglossaries-2016 %s" TeX-run-command nil t :help "Run makeglossaries to create glossary file")
+     ("Index" "makeindex-2016 %s" TeX-run-index nil t :help "Run makeindex to create index file")
+     ("upMendex" "upmendex-2016 %s" TeX-run-index t t :help "Run upmendex to create index file")
+     ("Xindy" "texindy-2016 %s" TeX-run-command nil t :help "Run xindy to create index file")
+     ("Check" "lacheck-2016 %s" TeX-run-compile nil
+      (latex-mode)
+      :help "Check LaTeX file for correctness")
+     ("ChkTeX" "chktex-2016 -v6 %s" TeX-run-compile nil
+      (latex-mode)
+      :help "Check LaTeX file for common mistakes")
+     ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document")
+     ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files")
+     ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files")
+     ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
  '(evil-want-Y-yank-to-eol nil)
+ '(ispell-highlight-face (quote flyspell-incorrect))
+ '(ispell-program-name "/usr/sepp/bin/aspell-0.60.6")
  '(org-agenda-files
    (quote
     ("/home/meggiman/org_notes/hd-computing.org" "/home/meggiman/org_notes/journal.org" "/home/meggiman/org_notes/meetings.org" "/home/meggiman/org_notes/pulp.org" "/home/meggiman/org_notes/pulpissimo_training.org" "/home/meggiman/org_notes/quicknotes.org" "/home/meggiman/org_notes/schedules.org" "/home/meggiman/org_notes/tasks.org")))
- '(org-image-actual-width nil)
- '(org-latex-caption-above nil)
- '(org-latex-default-packages-alist
-   (quote
-    (("AUTO" "inputenc" t
-      ("pdflatex"))
-     ("T1" "fontenc" t
-      ("pdflatex"))
-     ("" "graphicx" t nil)
-     ("" "grffile" t nil)
-     ("" "longtable" nil nil)
-     ("" "wrapfig" nil nil)
-     ("" "rotating" nil nil)
-     ("normalem" "ulem" t nil)
-     ("" "amsmath" t nil)
-     ("" "textcomp" t nil)
-     ("" "amssymb" t nil)
-     ("" "capt-of" nil nil)
-     ("" "hyperref" nil nil))))
  '(org-latex-pdf-process
    (quote
-    ("%latex -shell-escape -interaction nonstopmode -output-directory %o %f" "%latex -shell-escape -interaction nonstopmode -output-directory %o %f" "%latex -shell-escape -interaction nonstopmode -output-directory %o %f")))
+    ("pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f")))
  '(package-selected-packages
    (quote
-    (mscgen-mode org-ref key-chord helm-bibtex parsebib biblio biblio-core virtualenvwrapper ox-twbs ox-gfm flyspell-correct-helm flyspell-correct auto-dictionary realgud test-simple loc-changes load-relative xterm-color shell-pop pandoc-mode ox-pandoc ht multi-term eshell-z eshell-prompt-extras esh-help yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (floobits highlight systemd pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv poporg ox-twbs flyspell-correct-helm flyspell-correct auto-dictionary mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(spacemacs-theme-custom-colors (quote ((base . "#ffffff"))))
  '(verilog-indent-level-behavioral 2)
  '(verilog-indent-level-declaration 2)
