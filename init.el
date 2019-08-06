@@ -53,7 +53,7 @@ This function should only modify configuration layer settings."
      treemacs
      chrome
      syntax-checking
-     ;;spell-checking
+     (spell-checking :variables spell-checking-enable-by-default nil)
      (latex :variables
             latex-build-command "LaTeX"
             spell-checking-enable-auto-dictionary t)
