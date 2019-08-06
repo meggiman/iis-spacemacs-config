@@ -56,7 +56,7 @@ This function should only modify configuration layer settings."
      syntax-checking
      (spell-checking :variables spell-checking-enable-by-default nil)
      (latex :variables
-            latex-build-command "Makefile"
+            latex-build-command "LaTeX"
             spell-checking-enable-auto-dictionary t)
      (org :variables
           org-enable-bootstrap-support t)
