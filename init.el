@@ -662,6 +662,8 @@ you should place your code here."
     (require 'org-protocol)
     (require 'org-protocol-capture-html)
 
+    ;; Enable autofill  mode by default in org buffers
+    (add-hook 'org-mode-hook 'auto-fill-mode)
 
     ;; Load Poporg to use org mode for comment strings in other major modes.
     (autoload 'poporg-dwim "poporg" nil t)
