@@ -666,8 +666,31 @@ you should place your code here."
     ;; Load Poporg to use org mode for comment strings in other major modes.
     (autoload 'poporg-dwim "poporg" nil t)
     (global-set-key (kbd "C-c \"") 'poporg-dwim)
-    )
 
+    ;; Configure org-mode to invoke thunderlinks with thunderbird
+    (when (string-equal system-type "gnu/linux")
+      ;; modify this for your system
+      (setq thunderbird-program "thunderbird")
+
+      (defun org-message-thunderlink-open (slash-message-id)
+        "Handler for org-link-set-parameters that converts a standard message:// link into
+   a thunderlink and then invokes thunderbird."
+        ;; remove any / at the start of slash-message-id to create real message-id
+        (let ((message-id
+               (replace-regexp-in-string (rx bos (* "/"))
+                                         ""
+                                         slash-message-id)))
+          (start-process
+           (concat "thunderlink: " message-id)
+           nil
+           thunderbird-program
+           "-thunderlink"
+           (concat "thunderlink://messageid=" message-id)
+           )))
+      ;; on message://aoeu link, this will call handler with //aoeu
+      (org-link-set-parameters "message" :follow #'org-message-thunderlink-open))
+
+    )
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Do not write anything past this comment. This is where Emacs will
