@@ -692,6 +692,14 @@ you should place your code here."
       ;; on message://aoeu link, this will call handler with //aoeu
       (org-link-set-parameters "message" :follow #'org-message-thunderlink-open))
 
+
+    ;; Configure bibtex layer
+    (setq org-ref-default-bibliography '("~/org-ref/library.bib")
+          org-ref-pdf-directory "~/org-ref/pdfs"
+          org-ref-bibliography-notes "~/org_notes/literature-notes.org"
+          org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename
+          bibtex-completion-pdf-field "file")
+
     )
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
