@@ -596,7 +596,7 @@ you should place your code here."
   (with-eval-after-load 'org
     (setq org-capture-templates
           '(("t" "New task in tasks.org" entry (file+headline "~/org_notes/tasks.org" "Inbox")
-             "* TODO %?")
+             "* TODO %^{Task title?} %U\n\t%?")
             ("n" "New quick note with tags" entry (file "~/org_notes/quicknotes.org")
              "* %^{Title?} %^G\n %?")
             ("w" "Web site" entry
