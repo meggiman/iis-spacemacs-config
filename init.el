@@ -73,7 +73,7 @@ This function should only modify configuration layer settings."
      csv
      minimap
      multiple-cursors
-     ;(multiple-cursors :location local)
+                                        ;(multiple-cursors :location local)
      epub
      major-modes
      rebox
@@ -100,9 +100,9 @@ This function should only modify configuration layer settings."
                                       elf-mode
                                       figlet
                                       (mscgen-mode :location (recipe
-                                                             :fetcher github
-                                                             :repo "thomsten/mscgen-mode"
-                                                             ))
+                                                              :fetcher github
+                                                              :repo "thomsten/mscgen-mode"
+                                                              ))
                                       (boxes :location local)
                                       avy-zap
                                       virtualenvwrapper
@@ -627,56 +627,56 @@ you should place your code here."
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
     (setq org-agenda-files (list "~/org_notes/"  "~/org-notes-private")))
-    (setq org-download-method 'attach)
+  (setq org-download-method 'attach)
 
-    ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
-    ;; the tex code in a latex environment for latex export.
-    (require 'ox-latex)
-    (require 'mscgen-mode)
-    ;; Enable additional babel languages
-    (org-babel-do-load-languages 'org-babel-load-languages '((makefile t) (latex t) (shell t) (python t) (js t) (mscgen t)))
+  ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
+  ;; the tex code in a latex environment for latex export.
+  (require 'ox-latex)
+  (require 'mscgen-mode)
+  ;; Enable additional babel languages
+  (org-babel-do-load-languages 'org-babel-load-languages '((makefile t) (latex t) (shell t) (python t) (js t) (mscgen t)))
 
-    (push "~/org_notes/lib" load-path)
+  (push "~/org_notes/lib" load-path)
 
   ;;; Org Capture
   ;;;; Thank you random guy from StackOverflow
   ;;;; http://stackoverflow.com/questions/23517372/hook-or-advice-when-aborting-org-capture-before-template-selection
 
-    (defadvice org-capture
-        (after make-full-window-frame activate)
-      "Advise capture to be the only window when used as a popup"
-      (if (equal "emacs-capture" (frame-parameter nil 'name))
-          (delete-other-windows)))
+  (defadvice org-capture
+      (after make-full-window-frame activate)
+    "Advise capture to be the only window when used as a popup"
+    (if (equal "emacs-capture" (frame-parameter nil 'name))
+        (delete-other-windows)))
 
-    (defadvice org-capture-finalize
-        (after delete-capture-frame activate)
-      "Advise capture-finalize to close the frame"
-      (if (equal "emacs-capture" (frame-parameter nil 'name))
-          (delete-frame)))
-    (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
-    (setq org-image-actual-width (/ (display-pixel-width) 3)) ;; Set image size in org-mode to 1/3 of the display width
-    (setq org-duration-format (quote h:mm))
+  (defadvice org-capture-finalize
+      (after delete-capture-frame activate)
+    "Advise capture-finalize to close the frame"
+    (if (equal "emacs-capture" (frame-parameter nil 'name))
+        (delete-frame)))
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
+  (setq org-image-actual-width (/ (display-pixel-width) 3)) ;; Set image size in org-mode to 1/3 of the display width
+  (setq org-duration-format (quote h:mm))
 
-    ;; Org protocol config
-     (require 'edit-server)
-    (edit-server-start)
-    (require 'org-protocol)
-    (require 'org-protocol-capture-html)
+  ;; Org protocol config
+  (require 'edit-server)
+  (edit-server-start)
+  (require 'org-protocol)
+  (require 'org-protocol-capture-html)
 
-    ;; Enable autofill  mode by default in org buffers
-    (add-hook 'org-mode-hook 'auto-fill-mode)
+  ;; Enable autofill  mode by default in org buffers
+  (add-hook 'org-mode-hook 'auto-fill-mode)
 
-    ;; Load Poporg to use org mode for comment strings in other major modes.
-    (autoload 'poporg-dwim "poporg" nil t)
-    (global-set-key (kbd "C-c \"") 'poporg-dwim)
+  ;; Load Poporg to use org mode for comment strings in other major modes.
+  (autoload 'poporg-dwim "poporg" nil t)
+  (global-set-key (kbd "C-c \"") 'poporg-dwim)
 
-    ;; Configure org-mode to invoke thunderlinks with thunderbird
-    (when (string-equal system-type "gnu/linux")
-      ;; modify this for your system
-      (setq thunderbird-program "thunderbird")
+  ;; Configure org-mode to invoke thunderlinks with thunderbird
+  (when (string-equal system-type "gnu/linux")
+    ;; modify this for your system
+    (setq thunderbird-program "thunderbird")
 
-      (defun org-message-thunderlink-open (slash-message-id)
-        "Handler for org-link-set-parameters that converts a standard message:// link into
+    (defun org-message-thunderlink-open (slash-message-id)
+      "Handler for org-link-set-parameters that converts a standard message:// link into
    a thunderlink and then invokes thunderbird."
       ;; remove any / at the start of slash-message-id to create real message-id
       (let ((message-id
@@ -707,7 +707,8 @@ you should place your code here."
     (define-key pdf-view-mode-map (kbd "<C-mouse-5>") (lambda () (interactive) (pdf-view-shrink 1.05)))
     (define-key pdf-view-mode-map (kbd "<C-mouse-4>") (lambda () (interactive) (pdf-view-enlarge 1.05))))
 
-    )
+
+  )
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Do not write anything past this comment. This is where Emacs will
