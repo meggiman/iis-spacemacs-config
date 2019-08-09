@@ -44,6 +44,7 @@ This function should only modify configuration layer settings."
      helm
      python
      debug
+     search-engine
      ;; themes-megapack
      pdf
      auto-completion 
