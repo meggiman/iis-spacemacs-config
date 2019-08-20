@@ -106,7 +106,8 @@ This function should only modify configuration layer settings."
                                       avy-zap
                                       virtualenvwrapper
                                       poporg
-                                      pocket-reader)
+                                      pocket-reader
+                                      riscv-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
@@ -426,7 +427,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
-   dotspacemacs-folding-method 'evil
+   dotspacemacs-folding-method 'origami
 
    ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
    ;; (default nil)
