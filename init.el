@@ -47,7 +47,9 @@ This function should only modify configuration layer settings."
      search-engine
      ;; themes-megapack
      pdf
-     auto-completion 
+     (auto-completion :variables
+                      spacemacs-default-company-backends '((company-semantic company-dabbrev-code company-gtags company-etags company-keywords company-yankpad)
+                                                           company-files company-dabbrev))
      better-defaults
      emacs-lisp
      git
@@ -83,6 +85,7 @@ This function should only modify configuration layer settings."
             c-c++-enable-clang-support t)
      ;; version-control
      ascii-titles
+     yankpad
      )
 
    ;; List of additional packages that will be installed without being

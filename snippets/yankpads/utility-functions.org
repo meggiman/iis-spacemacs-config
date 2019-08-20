@@ -1,0 +1,68 @@
+* Illustration
+** Generate Wavedrom Bitfields
+   #+name: gen_bitfield
+   #+BEGIN_SRC python :exports none :results silent :var src_path="figs/reg.json" dst_path='None'
+     from bit_field import render, jsonml_stringify
+     import os
+     from ast import literal_eval
+     if not dst_path:
+         pre, ext = os.path.splitext(src_path)
+         dst_path = pre+'.svg'
+     with open(src_path, 'r') as src_file:
+         bitfield = literal_eval(src_file.read())
+         reg = bitfield['reg']
+         config = bitfield.get('config')
+         if not config:
+             config = {}
+         jsonml = render(reg, **config)
+         dst_dir = os.path.dirname(dst_path)
+         if dst_dir:
+             os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+         with open(dst_path, 'w+') as file:
+             file.write(jsonml_stringify(jsonml))
+
+   #+END_SRC
+** Generate Wavedrom Wave Diagrams
+   #+name: gen_wavedrom
+   #+BEGIN_SRC python :exports none :results silent  :var src_path="figs/wave.json" dst_path='None'
+     from wavedrom import WaveDrom
+     import os
+     import json
+
+     if not dst_path:
+           pre, ext = os.path.splitext(src_path)
+           dst_path = pre+'.svg'
+
+     with open(src_path, "r") as f:
+           jinput = json.load(f)
+           wavedrom = WaveDrom()
+           output = wavedrom.renderWaveForm(0, jinput)
+           output.saveas(dst_path)
+   #+END_SRC
+* Utilities
+** Create Directory Listing
+   #+name: dir_content_overview
+   #+BEGIN_SRC python :exports none :results output code :var dir="." suffix='None'
+     import pathlib
+
+     def print_dir(dir, indent="*"):
+         for file in sorted(sorted(dir.iterdir()), key=lambda x: x.is_dir()):
+             if file.is_dir() and not file.is_symlink():
+                 print("{} {}:".format(indent, file.name))
+                 print_dir(file, indent+"*")
+             else:
+                 if not suffix or file.suffix == suffix:
+                     print("  * [[file:{}][{}]]".format(str(file).replace(" ", "%20"), file.name))
+
+     directory = pathlib.Path(dir)
+     print_dir(directory)
+   #+END_SRC
+
+** Extract PDF page
+   #+name: show_pdf_page
+     #+BEGIN_SRC bash :exports none :results value file :var pdf='dummy.pdf' page_nr=0 output_dir='pdf_excerpts' density=300
+       mkdir -p $output_dir
+       output_path=$output_dir/$(basename $pdf .pdf)-$page_nr.png
+       convert -density $density $pdf[$page_nr] -quality 90 $output_path
+       printf $output_path
+     #+END_SRC
