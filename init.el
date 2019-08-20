@@ -44,9 +44,12 @@ This function should only modify configuration layer settings."
      helm
      python
      debug
+     search-engine
      ;; themes-megapack
      pdf
-     auto-completion 
+     (auto-completion :variables
+                      spacemacs-default-company-backends '((company-semantic company-dabbrev-code company-gtags company-etags company-keywords company-yankpad)
+                                                           company-files company-dabbrev))
      better-defaults
      emacs-lisp
      git
@@ -72,7 +75,7 @@ This function should only modify configuration layer settings."
      csv
      minimap
      multiple-cursors
-     ;(multiple-cursors :location local)
+                                        ;(multiple-cursors :location local)
      epub
      major-modes
      rebox
@@ -82,6 +85,7 @@ This function should only modify configuration layer settings."
             c-c++-enable-clang-support t)
      ;; version-control
      ascii-titles
+     yankpad
      )
 
    ;; List of additional packages that will be installed without being
@@ -99,9 +103,9 @@ This function should only modify configuration layer settings."
                                       elf-mode
                                       figlet
                                       (mscgen-mode :location (recipe
-                                                             :fetcher github
-                                                             :repo "thomsten/mscgen-mode"
-                                                             ))
+                                                              :fetcher github
+                                                              :repo "thomsten/mscgen-mode"
+                                                              ))
                                       (boxes :location local)
                                       avy-zap
                                       virtualenvwrapper
@@ -534,6 +538,7 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
   ;;Remap C-z to undo-tree command so it is easier to quickly undo something without opening undo-tree
   (define-key evil-emacs-state-map (kbd "C-z") nil)
   (global-set-key (kbd "C-z") 'undo-tree-undo)
@@ -626,82 +631,94 @@ you should place your code here."
     (setq org-use-fast-todo-selection t)
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
+
+    ;; Configure org agenda
     (setq org-agenda-files (list "~/org_notes/"  "~/org-notes-private")))
-    (setq org-download-method 'attach)
+    (setq org-agenda-todo-list-sublevels nil)
 
-    ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
-    ;; the tex code in a latex environment for latex export.
-    (require 'ox-latex)
-    (require 'mscgen-mode)
-    ;; Enable additional babel languages
-    (org-babel-do-load-languages 'org-babel-load-languages '((makefile t) (latex t) (shell t) (python t) (js t) (mscgen t)))
+  ;; Use the builtin file attachement system for org-download
+  (setq org-download-method 'attach)
 
-    (push "~/org_notes/lib" load-path)
+  ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
+  ;; the tex code in a latex environment for latex export.
+  (require 'ox-latex)
+  (require 'mscgen-mode)
+  ;; Enable additional babel languages
+  (org-babel-do-load-languages 'org-babel-load-languages '((makefile t) (latex t) (shell t) (python t) (js t) (mscgen t)))
+
+  (push "~/org_notes/lib" load-path)
 
   ;;; Org Capture
   ;;;; Thank you random guy from StackOverflow
   ;;;; http://stackoverflow.com/questions/23517372/hook-or-advice-when-aborting-org-capture-before-template-selection
 
-    (defadvice org-capture
-        (after make-full-window-frame activate)
-      "Advise capture to be the only window when used as a popup"
-      (if (equal "emacs-capture" (frame-parameter nil 'name))
-          (delete-other-windows)))
+  (defadvice org-capture
+      (after make-full-window-frame activate)
+    "Advise capture to be the only window when used as a popup"
+    (if (equal "emacs-capture" (frame-parameter nil 'name))
+        (delete-other-windows)))
 
-    (defadvice org-capture-finalize
-        (after delete-capture-frame activate)
-      "Advise capture-finalize to close the frame"
-      (if (equal "emacs-capture" (frame-parameter nil 'name))
-          (delete-frame)))
-    (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
-    (setq org-image-actual-width (/ (display-pixel-width) 3)) ;; Set image size in org-mode to 1/3 of the display width
-    (setq org-duration-format (quote h:mm))
+  (defadvice org-capture-finalize
+      (after delete-capture-frame activate)
+    "Advise capture-finalize to close the frame"
+    (if (equal "emacs-capture" (frame-parameter nil 'name))
+        (delete-frame)))
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
+  (setq org-image-actual-width (/ (display-pixel-width) 3)) ;; Set image size in org-mode to 1/3 of the display width
+  (setq org-duration-format (quote h:mm))
 
-    ;; Org protocol config
-     (require 'edit-server)
-    (edit-server-start)
-    (require 'org-protocol)
-    (require 'org-protocol-capture-html)
+  ;; Org protocol config
+  (require 'edit-server)
+  (edit-server-start)
+  (require 'org-protocol)
+  (require 'org-protocol-capture-html)
 
-    ;; Enable autofill  mode by default in org buffers
-    (add-hook 'org-mode-hook 'auto-fill-mode)
+  ;; Enable autofill  mode by default in org buffers
+  (add-hook 'org-mode-hook 'auto-fill-mode)
 
-    ;; Load Poporg to use org mode for comment strings in other major modes.
-    (autoload 'poporg-dwim "poporg" nil t)
-    (global-set-key (kbd "C-c \"") 'poporg-dwim)
+  ;; Load Poporg to use org mode for comment strings in other major modes.
+  (autoload 'poporg-dwim "poporg" nil t)
+  (global-set-key (kbd "C-c \"") 'poporg-dwim)
 
-    ;; Configure org-mode to invoke thunderlinks with thunderbird
-    (when (string-equal system-type "gnu/linux")
-      ;; modify this for your system
-      (setq thunderbird-program "thunderbird")
+  ;; Configure org-mode to invoke thunderlinks with thunderbird
+  (when (string-equal system-type "gnu/linux")
+    ;; modify this for your system
+    (setq thunderbird-program "thunderbird")
 
-      (defun org-message-thunderlink-open (slash-message-id)
-        "Handler for org-link-set-parameters that converts a standard message:// link into
+    (defun org-message-thunderlink-open (slash-message-id)
+      "Handler for org-link-set-parameters that converts a standard message:// link into
    a thunderlink and then invokes thunderbird."
-        ;; remove any / at the start of slash-message-id to create real message-id
-        (let ((message-id
-               (replace-regexp-in-string (rx bos (* "/"))
-                                         ""
-                                         slash-message-id)))
-          (start-process
-           (concat "thunderlink: " message-id)
-           nil
-           thunderbird-program
-           "-thunderlink"
-           (concat "thunderlink://messageid=" message-id)
-           )))
-      ;; on message://aoeu link, this will call handler with //aoeu
-      (org-link-set-parameters "message" :follow #'org-message-thunderlink-open))
+      ;; remove any / at the start of slash-message-id to create real message-id
+      (let ((message-id
+             (replace-regexp-in-string (rx bos (* "/"))
+                                       ""
+                                       slash-message-id)))
+        (start-process
+         (concat "thunderlink: " message-id)
+         nil
+         thunderbird-program
+         "-thunderlink"
+         (concat "thunderlink://messageid=" message-id)
+         )))
+    ;; on message://aoeu link, this will call handler with //aoeu
+    (org-link-set-parameters "message" :follow #'org-message-thunderlink-open))
 
 
-    ;; Configure bibtex layer
-    (setq org-ref-default-bibliography '("~/org-ref/library.bib")
-          org-ref-pdf-directory "~/org-ref/pdfs"
-          org-ref-bibliography-notes "~/org_notes/literature-notes.org"
-          org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename
-          bibtex-completion-pdf-field "file")
+  ;; Configure bibtex layer
+  (setq org-ref-default-bibliography '("~/org-ref/library.bib")
+        org-ref-pdf-directory "~/org-ref/pdfs"
+        org-ref-bibliography-notes "~/org_notes/literature-notes.org"
+        org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename
+        bibtex-completion-pdf-field "file")
 
-    )
+
+  ;; Configure PDFview to zoom with mousewheel
+  (with-eval-after-load 'pdf-view
+    (define-key pdf-view-mode-map (kbd "<C-mouse-5>") (lambda () (interactive) (pdf-view-shrink 1.05)))
+    (define-key pdf-view-mode-map (kbd "<C-mouse-4>") (lambda () (interactive) (pdf-view-enlarge 1.05))))
+
+
+  )
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Do not write anything past this comment. This is where Emacs will
@@ -767,15 +784,72 @@ This function is called at the very end of Spacemacs initialization."
  '(evil-want-Y-yank-to-eol nil)
  '(ispell-highlight-face (quote flyspell-incorrect))
  '(ispell-program-name "/usr/sepp/bin/aspell-0.60.6")
+ '(mouse-wheel-progressive-speed nil)
+ '(mouse-wheel-scroll-amount (quote (3 ((shift) . 1) ((control)))))
  '(org-agenda-files
    (quote
     ("/home/meggiman/org_notes/hd-computing.org" "/home/meggiman/org_notes/journal.org" "/home/meggiman/org_notes/meetings.org" "/home/meggiman/org_notes/pulp.org" "/home/meggiman/org_notes/pulpissimo_training.org" "/home/meggiman/org_notes/quicknotes.org" "/home/meggiman/org_notes/schedules.org" "/home/meggiman/org_notes/tasks.org")))
+ '(org-format-latex-options
+   (quote
+    (:foreground default :background default :scale 1.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers
+                 ("begin" "$1" "$" "$$" "\\(" "\\["))))
+ '(org-image-actual-width 800)
  '(org-latex-pdf-process
    (quote
     ("pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f")))
+ '(org-pandoc-menu-entry
+   (quote
+    ((52 "to html5 and open." org-pandoc-export-to-html5-and-open)
+     (36 "as html5." org-pandoc-export-as-html5)
+     (53 "to html5-pdf and open." org-pandoc-export-to-html5-pdf-and-open)
+     (37 "to html5-pdf." org-pandoc-export-to-html5-pdf)
+     (60 "to slideous and open." org-pandoc-export-to-slideous-and-open)
+     (44 "as slideous." org-pandoc-export-as-slideous)
+     (61 "to ms-pdf and open." org-pandoc-export-to-ms-pdf-and-open)
+     (45 "to ms-pdf." org-pandoc-export-to-ms-pdf)
+     (98 "to beamer-pdf and open." org-pandoc-export-to-beamer-pdf-and-open)
+     (66 "to beamer-pdf." org-pandoc-export-to-beamer-pdf)
+     (99 "to context-pdf and open." org-pandoc-export-to-context-pdf-and-open)
+     (67 "to context-pdf." org-pandoc-export-to-context-pdf)
+     (100 "to docbook5 and open." org-pandoc-export-to-docbook5-and-open)
+     (68 "as docbook5." org-pandoc-export-as-docbook5)
+     (101 "to epub3 and open." org-pandoc-export-to-epub3-and-open)
+     (69 "to epub3." org-pandoc-export-to-epub3)
+     (103 "to gfm buffer." org-pandoc-export-as-gfm)
+     (71 "as gfm." org-pandoc-export-as-gfm)
+     (104 "to html4 and open." org-pandoc-export-to-html4-and-open)
+     (72 "as html4." org-pandoc-export-as-html4)
+     (105 "to icml and open." org-pandoc-export-to-icml-and-open)
+     (73 "as icml." org-pandoc-export-as-icml)
+     (106 "to json and open." org-pandoc-export-to-json-and-open)
+     (74 "as json." org-pandoc-export-as-json)
+     (108 "to latex-pdf and open." org-pandoc-export-to-latex-pdf-and-open)
+     (76 "to latex-pdf." org-pandoc-export-to-latex-pdf)
+     (109 "to man and open." org-pandoc-export-to-man-and-open)
+     (77 "as man." org-pandoc-export-as-man)
+     (110 "to native and open." org-pandoc-export-to-native-and-open)
+     (78 "as native." org-pandoc-export-as-native)
+     (111 "to odt and open." org-pandoc-export-to-odt-and-open)
+     (79 "to odt." org-pandoc-export-to-odt)
+     (112 "to pptx and open." org-pandoc-export-to-pptx-and-open)
+     (80 "to pptx." org-pandoc-export-to-pptx)
+     (114 "to rtf and open." org-pandoc-export-to-rtf-and-open)
+     (82 "as rtf." org-pandoc-export-as-rtf)
+     (117 "to dokuwiki and open." org-pandoc-export-to-dokuwiki-and-open)
+     (85 "as dokuwiki." org-pandoc-export-as-dokuwiki)
+     (118 "to revealjs and open." org-pandoc-export-to-revealjs-and-open)
+     (86 "as revealjs." org-pandoc-export-as-revealjs)
+     (119 "to mediawiki and open." org-pandoc-export-to-mediawiki-and-open)
+     (87 "as mediawiki." org-pandoc-export-as-mediawiki)
+     (120 "to docx and open." org-pandoc-export-to-docx-and-open)
+     (88 "to docx." org-pandoc-export-to-docx)
+     (121 "to slidy and open." org-pandoc-export-to-slidy-and-open)
+     (89 "as slidy." org-pandoc-export-as-slidy)
+     (122 "to dzslides and open." org-pandoc-export-to-dzslides-and-open)
+     (90 "as dzslides." org-pandoc-export-as-dzslides))))
  '(package-selected-packages
    (quote
-    (floobits highlight systemd pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv poporg ox-twbs flyspell-correct-helm flyspell-correct auto-dictionary mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (yankpad engine-mode floobits highlight systemd pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv poporg ox-twbs flyspell-correct-helm flyspell-correct auto-dictionary mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(spacemacs-theme-custom-colors (quote ((base . "#ffffff"))))
  '(verilog-indent-level-behavioral 2)
  '(verilog-indent-level-declaration 2)

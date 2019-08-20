@@ -1,0 +1,264 @@
+* org-mode
+** src: Source Block
+   #+BEGIN_SRC ${1:lang}
+   $0
+   #+END_SRC
+
+* verilog-mode
+  
+* Org Conference Report
+** [[file:yankpads/org-writing.org::*Illustration][Illustration]]
+** [[file:yankpads/org-writing.org::*Utilities][Utilities]]
+** report: New Report                                                   :src:
+   #+BEGIN_SRC org
+     ,#+TITLE: $1 - Conference Report
+     ,#+AUTHOR: ${2:Manuel Eggimann}
+     ,#+OPTIONS: ^:{}
+     # Add Subtitle for HTML Export
+     ,#+BEGIN_EXPORT html
+       <h4 class="subtitle"><i>by $2</i></h4>
+       Download this report as a <a href="`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`.pdf">PDF</a>
+     ,#+END_EXPORT
+
+
+     # Latex Configuration (Comment out if not needed)
+     :latex_config:
+     ,#+LATEX_COMPILER: pdflatex
+     ,#+LATEX_CLASS_OPTIONS: [a4paper]
+     ,#+LATEX_HEADER: \usepackage[top=2.54cm, bottom=2.54cm, left=2.54cm, right=2.54cm]{geometry}
+     ,#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+     ,#+LATEX_HEADER: \usepackage[x11names]{xcolor}
+     ,#+LATEX_HEADER: \usepackage{bytefield}
+     ,#+LATEX_HEADER: \usepackage{fancyhdr}
+     ,#+LATEX_HEADER: \usepackage{pdfpages}
+     ,#+LATEX_HEADER: \usepackage[section]{placeins}
+     ,#+LATEX_HEADER: \usepackage[inkscapelatex = false]{svg}
+     ,#+LATEX_HEADER: \hypersetup{linktoc = all, colorlinks = true, urlcolor = DodgerBlue4, citecolor = PaleGreen1, linkcolor = DodgerBlue4}
+     :END:
+
+
+     # Disable the table of content creation
+     # #+OPTIONS: toc:nil
+
+     # Latex Präamble 
+     ,#+BEGIN_SRC latex
+       \pagestyle{fancy}
+
+       \makeatletter
+       \AtBeginDocument{%
+         \expandafter\renewcommand\expandafter\subsection\expandafter{%
+           \expandafter\@fb@secFB\subsection
+         }%
+       }
+       \makeatother
+
+
+       \rhead{Conference Report}
+       \lhead{ISLPED 2019 - Lausanne}
+       \cfoot{\textbf{\thepage}}
+     ,#+END_SRC
+
+     ,* Setup Environment                                                :noexport:
+     ,** Init folder structure
+        ,#+BEGIN_SRC bash :results none :output silent
+              mkdir -p figs
+              mkdir -p pdf_excerpts
+        ,#+END_SRC
+
+     ,** (Optional) Create and activate virualenv for python
+        # Prepare virtual environment
+        ,#+BEGIN_SRC bash :exports none :results silent
+              rm -rf ./venv
+              python3 -m venv ./venv
+              source ./venv/bin/activate
+              pip install bit-field wavedrom
+        ,#+END_SRC
+
+        ,#+BEGIN_SRC elisp :exports none :results silent
+          (require 'virtualenvwrapper)
+          (venv-initialize-interactive-shells) ;; if you want interactive shell support
+          (venv-initialize-eshell) ;; if you want eshell support
+          (venv-set-location ".")
+          (venv-workon "venv")
+        ,#+END_SRC
+     ,** Helper Functions
+        ,#+include: "~/.spacemacs.d/snippets/yankpads/utility-functions.org"
+     ,* How to Use This Template                                         :noexport:
+     ,** Generate WaveDrom Illustrations
+        ,#+BEGIN_SRC json :tangle "figs/test_wave.json" :results none :exports none
+          {"signal": [
+              { "name": "clk", 		"wave": "P........."},
+              { "name": "req", 		"wave": "01...01..."},
+              { "name": "gnt", 		"wave": "0.1..01010"},
+              { "name": "wen", 		"wave": "1........."},
+              { "name": "data", 	"wave": "x........."},
+              { "name": "add", 		"wave": "x3.45x34.="},
+              { "name": "be", 		"wave": "x........."},
+              { "name": "r_valid","wave": "0..1..0101"},
+              { "name": "r_data", "wave": "x..345x3x5"}
+          ]}
+        ,#+END_SRC
+        ,#+call: gen_wavedrom(src_path="figs/test_wave.json") :exports results
+     ,** 1. Execute init scripts 
+        - Execute the scripts in [[*Init folder structure][Init folder structure]] to generate the necessary folders.
+        - Execute scripts in [[*(Optional) Create and activate virualenv for python][(Optional) Create and activate virualenv for python]] to create a new virtual environment for python with the necessary packages installed
+     ,** 2. Start writing your document with org mode formatting
+     ,*** Creating Tables with Captions and Label for Crossreferences in Latex
+         ,#+ATTR_LATEX: :align lllp{8cm}
+         ,#+LABEL: tbl:signal_descriptions
+         ,#+CAPTION: Clock and reset signals
+         |-----------------+----------------+-------------+---------------------------------------------------------------|
+         | *Signal*        | *Width [bits]* | *Direction* | *Description*                                                 |
+         |-----------------+----------------+-------------+---------------------------------------------------------------|
+         | *=REF_CLK=*     |              1 | /input/     | The reference clock with which the interface is synchronized. |
+         | *=RSTN=*        |              1 | /input/     | Asynchronous active-low reset.                                |
+         | *=SOFT_CLEAR=*  |              1 | /input/     | Synchronous active-low soft reset.                            |
+         |-----------------+----------------+-------------+---------------------------------------------------------------|
+
+         Reference the table with [[tbl:signal_descriptions]].
+     ,*** Figures with Caption and Defined Width
+         Create figures by inserting links to the image files. They will be inserted
+         as figures when exporting to LaTeX/PDF. Alternatively you can use one of the
+         [[*Helper Functions][Helper Functions]] to generate certain kinds of illustrations on the fly. See [[*4. Use the Helper Functions][4. Use the Helper Functions]] for details.
+
+         ,#+CAPTION: Some Caption
+         ,#+ATTR_LATEX: :width \textwidth :placement [!h]
+         ,#+LABEL: fig:stream_hanshake
+         [[file:figs/stream_protocol_handshaking.svg]]
+
+     ,*** Crossreference sections and subsections
+         1. Navigate to the textsection you want to reference (can also be in a
+            different file) and press ~M-m a o l~ to store the link to the clipboard.
+         2. Navigate to the text section where you want to add the reference and type
+            ~M-RET i l~ to insert a link. The stored link from before will show up as
+            the default link to insert.
+     ,** TODO 3. Using Snippets
+
+     ,** 4. Use the Helper Functions
+     ,*** Generating Bitfield Illustrations   
+         1. Specify the bitfield (see [[https://github.com/drom/bitfield]]) in a source
+            block as follows: Tipp: Place the cursor on top of the source code block
+            and press ~C-'~ to navigate to enter edit mode with syntax highlighting.
+
+            ,#+BEGIN_SRC json :tangle "figs/some_reg.json" :results none :exports none
+              {"reg":[
+                  {"bits": 16, "name": "payload", "type":3 },
+                  {"bits": 4, "name": "header", "type":4}
+              ], "config":{"lanes":3, "bits":24} }
+            ,#+END_SRC
+
+         2. Tangle the whole buffer (see [[https://orgmode.org/manual/Extracting-source-code.html]] for a detailed explanation). 
+            Press ~M-RET b t~. This will save content the source blocks with a :tangle option to the specified files.
+
+         3. Generate the illustration by calling the helper function with the tangled bitfield json file as the argument:
+
+            ,#+call: gen_bitfield(src_path="figs/some_reg.json") :exports results
+
+            The function will be executed automatically durring export. You can however
+            force execution by pressing ~C-c C-C~ when the cursors in at the function call statement.
+
+         4. Insert the actual image
+
+            ,#+CAPTION: Some Bitfield
+            ,#+ATTR_LATEX: :width \textwidth :placement [!h]
+            ,#+LABEL: fig:some_bitfield
+            [[file:figs/some_reg.svg]]
+
+     ,*** Generating Wave Diagrams
+         1. Specify the wave diagram (see [[https://github.com/drom/wavedrom]]) in a source
+            block as follows: Tipp: Place the cursor on top of the source code block
+            and press ~C-'~ to navigate to enter edit mode with syntax highlighting.
+            ,#+BEGIN_SRC json :tangle "figs/some_wave.json" :results none :exports none
+              {"signal": [
+                  { "name": "clk", 		"wave": "P........."},
+                  { "name": "req", 		"wave": "01...01..."},
+                  { "name": "gnt", 		"wave": "0.1..01010"},
+                  { "name": "wen", 		"wave": "1........."},
+                  { "name": "data", 	"wave": "x........."},
+                  { "name": "add", 		"wave": "x3.45x34.="},
+                  { "name": "be", 		"wave": "x........."},
+                  { "name": "r_valid","wave": "0..1..0101"},
+                  { "name": "r_data", "wave": "x..345x3x5"}
+              ]}
+            ,#+END_SRC
+         2. Tangle the whole buffer (see [[https://orgmode.org/manual/Extracting-source-code.html]] for a detailed explanation). 
+            Press ~M-RET b t~. This will save content the source blocks with a :tangle option to the specified files.
+
+         3. Generate the illustration by calling the helper function with the tangled wavedrom json file as the argument:
+
+            ,#+call: gen_wavedrom(src_path="figs/some_wave.json") :exports results
+
+            The function will be executed automatically durring export. You can however
+            force execution by pressing ~C-c C-C~ when the cursors in at the function call statement.
+
+         4. Insert the actual image
+
+            ,#+CAPTION: Some Wave Diagram
+            ,#+ATTR_LATEX: :width \textwidth :placement [!h]
+            ,#+LABEL: fig:some_wave
+            [[file:figs/some_wave.svg]]
+
+     ,*** Generate mscgen handshaking diagrams
+         ,#+BEGIN_SRC mscgen :file chart.svg :filetype svg :exports none
+           msc {
+           hscale = "2";
+
+           a,b,c;
+
+           a->b [ label = "ab()" ] ;
+           b->c [ label = "bc(TRUE)"];
+           c=>c [ label = "process(1)" ];
+           c=>c [ label = "process(2)" ];
+           ...;
+           c=>c [ label = "process(n)" ];
+           c=>c [ label = "process(END)" ];
+           a<<=c [ label = "callback()"];
+           ---  [ label = "If more to run", ID="*" ];
+           a->a [ label = "next()"];
+           a->c [ label = "ac1()\nac2()"];
+           b<-c [ label = "cb(TRUE)"];
+           b->b [ label = "stalled(...)"];
+           a<-b [ label = "ab() = FALSE"];
+           a>>b [ label = "Test"];
+           a=>>b [ label = "Test"];
+           a:>b [ label = "Test", ID = "1"];
+           a-xb [ label = "Test", ID = "2"];
+           |||;
+           |||;
+           a->* [ label = "Broadcast"];
+           a box a [ label = "box"];
+           b rbox b [ label = "rbox"];
+           c abox b [ label = "abox"];
+           a note c [ label = "note"];
+           }
+         ,#+END_SRC
+
+         ,#+RESULTS:
+         [[file:chart.svg]]
+
+         Press ~C-c C-c~ to generate the mscgen diagram. In contrast to the wave
+         diagram and the bitfields you do not have to call a helper function since
+         mscgen support is already built into org-mode.
+     ,*** Extract single pdf page for insertion into org mode
+         The helper function show_pdf_page converts a single page of a pdf document
+         to a png image and displays it inline in the org buffer. Useful to include
+         single pdf pages into the document.
+
+         ,#+call: show_pdf_page(pdf="path/subdir/SomeFile.pdf", page_nr=5) :exports results
+
+         ,#+RESULTS:
+         [[file:pdf_excerpts/SomeFile-5.png]]
+
+
+     ,** 5. Export to desired output format   
+     ,*** Export as LaTeX document
+         Type: ~M-RET e e l p~ to export the file as a PDF file
+     ,*** Export as bootstrap formated Webpage
+         Type: ~M-RET e e w h to export the file as a html file with Twitter Bootstrap CSS formatting
+
+         # Begin of Actual Content
+     ,* Agenda
+     ,* First Day
+       $0
+   #+END_SRC
+
