@@ -123,7 +123,11 @@ This function should only modify configuration layer settings."
                                       poporg
                                       pocket-reader
                                       riscv-mode
-                                      org-alert)
+                                      org-wild-notifier
+                                      (dcsh-mode :location (recipe
+                                                            :fetcher )))
+
+
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
@@ -579,9 +583,9 @@ you should place your code here."
   ;; Remap M-m s e to iedit-mode instead of evil-iedit-mode
   (spacemacs/set-leader-keys "se" 'iedit-mode)
 
-  ;; Configure org-alert
-  (require 'org-alert)
-  (org-alert-enable)
+  ;; Configure wild-notifier for org mode
+  (require 'org-wild-notifier)
+  (org-wild-notifier-mode)
   (setq alert-default-style 'libnotify)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
