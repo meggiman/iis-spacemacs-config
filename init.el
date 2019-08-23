@@ -111,7 +111,8 @@ This function should only modify configuration layer settings."
                                       virtualenvwrapper
                                       poporg
                                       pocket-reader
-                                      riscv-mode)
+                                      riscv-mode
+                                      org-alert)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
@@ -551,6 +552,11 @@ you should place your code here."
 
   ;; Remap M-m s e to iedit-mode instead of evil-iedit-mode
   (spacemacs/set-leader-keys "se" 'iedit-mode)
+
+  ;; Configure org-alert
+  (require 'org-alert)
+  (org-alert-enable)
+  (setq alert-default-style 'libnotify)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Enable synctex correlation
