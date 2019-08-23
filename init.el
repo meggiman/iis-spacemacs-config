@@ -564,6 +564,10 @@ you should place your code here."
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;; Configure org export command for latex pdf
+  (setq org-latex-pdf-process
+        '("latexmk -pdflatex='pdflatex -shell-escape -interaction nonstopmode' -pdf -bibtex -f %f"))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; flymd fix to use Firefox instead of chrome for Markdown live preview ;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -794,9 +798,6 @@ This function is called at the very end of Spacemacs initialization."
     (:foreground default :background default :scale 1.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers
                  ("begin" "$1" "$" "$$" "\\(" "\\["))))
  '(org-image-actual-width 800)
- '(org-latex-pdf-process
-   (quote
-    ("pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex-2016 -shell-escape -interaction nonstopmode -output-directory %o %f")))
  '(org-pandoc-menu-entry
    (quote
     ((52 "to html5 and open." org-pandoc-export-to-html5-and-open)
