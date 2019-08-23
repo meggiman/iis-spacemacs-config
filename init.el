@@ -39,6 +39,7 @@ This function should only modify configuration layer settings."
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      systemd
      javascript
+     json
      html
      helm
      python
@@ -57,6 +58,12 @@ This function should only modify configuration layer settings."
      major-modes
      (c-c++ :variables
             c-c++-enable-clang-support t)
+     graphviz
+     plantuml
+     shell-scripts
+
+
+
 
      ;;;;;;;;;
      ;; IDE ;;
@@ -64,7 +71,8 @@ This function should only modify configuration layer settings."
      (auto-completion :variables
                       spacemacs-default-company-backends '((company-semantic company-dabbrev-code company-gtags company-etags company-keywords company-yankpad)
                                                            company-files company-dabbrev))
-     debug
+     dap
+     lsp
      syntax-checking
      (spell-checking :variables spell-checking-enable-by-default nil)
      gtags
@@ -123,9 +131,7 @@ This function should only modify configuration layer settings."
                                       poporg
                                       pocket-reader
                                       riscv-mode
-                                      org-wild-notifier
-                                      (dcsh-mode :location (recipe
-                                                            :fetcher )))
+                                      org-wild-notifier)
 
 
    ;; A list of packages that cannot be updated.
