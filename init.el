@@ -33,59 +33,70 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(systemd
+   '(
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     ;; Languages and file-type major modes  ;;
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     systemd
      javascript
      html
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
-     ;; `M-m f e R' (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
      helm
      python
-     debug
-     search-engine
-     ;; themes-megapack
-     pdf
-     (auto-completion :variables
-                      spacemacs-default-company-backends '((company-semantic company-dabbrev-code company-gtags company-etags company-keywords company-yankpad)
-                                                           company-files company-dabbrev))
-     better-defaults
      emacs-lisp
-     git
      markdown
-     treemacs
-     chrome
-     syntax-checking
-     (spell-checking :variables spell-checking-enable-by-default nil)
      (latex :variables
             latex-build-command "LaTeX"
             spell-checking-enable-auto-dictionary t)
      (org :variables
           org-enable-bootstrap-support t)
      bibtex
+     verilog
+     yaml
+     csv
+     epub
+     major-modes
+     (c-c++ :variables
+            c-c++-enable-clang-support t)
+
+     ;;;;;;;;;
+     ;; IDE ;;
+     ;;;;;;;;;
+     (auto-completion :variables
+                      spacemacs-default-company-backends '((company-semantic company-dabbrev-code company-gtags company-etags company-keywords company-yankpad)
+                                                           company-files company-dabbrev))
+     debug
+     syntax-checking
+     (spell-checking :variables spell-checking-enable-by-default nil)
+     gtags
+     semantic
+
+     ;;;;;;;;;;;;;;;;;;;;;;;;
+     ;; Tools & Utilities  ;;
+     ;;;;;;;;;;;;;;;;;;;;;;;;
+     search-engine
+     better-defaults
+     pdf
+     git
+     treemacs
+     chrome
      pandoc
+     minimap
+     multiple-cursors
+     ;(multiple-cursors :location local)
+     rebox
+     neotree
+     ;; version-control
+     ascii-titles
+     yankpad
+
+     ;;;;;;;;;;;;
+     ;; Others ;;
+     ;;;;;;;;;;;;
      ;; (shell :variables
      ;;         shell-default-height 30
      ;;         shell-default-position 'bottom
      ;;         shell-default-shell 'eshell
      ;;         shell-default-term-shell "/bin/zsh")
-     verilog
-     yaml
-     csv
-     minimap
-     multiple-cursors
-                                        ;(multiple-cursors :location local)
-     epub
-     major-modes
-     rebox
-     gtags
-     neotree
-     (c-c++ :variables
-            c-c++-enable-clang-support t)
-     ;; version-control
-     ascii-titles
-     yankpad
      )
 
    ;; List of additional packages that will be installed without being
