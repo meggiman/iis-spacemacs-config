@@ -130,8 +130,7 @@ This function should only modify configuration layer settings."
                                       virtualenvwrapper
                                       poporg
                                       pocket-reader
-                                      riscv-mode
-                                      org-wild-notifier)
+                                      riscv-mode)
 
 
    ;; A list of packages that cannot be updated.
@@ -588,11 +587,6 @@ you should place your code here."
 
   ;; Remap M-m s e to iedit-mode instead of evil-iedit-mode
   (spacemacs/set-leader-keys "se" 'iedit-mode)
-
-  ;; Configure wild-notifier for org mode
-  (require 'org-wild-notifier)
-  (org-wild-notifier-mode)
-  (setq alert-default-style 'libnotify)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Enable synctex correlation
