@@ -95,16 +95,16 @@ This function should only modify configuration layer settings."
      neotree
      ;; version-control
      ascii-titles
-     yankpad
-
+     imenu-list
+     
      ;;;;;;;;;;;;
      ;; Others ;;
      ;;;;;;;;;;;;
-     ;; (shell :variables
-     ;;         shell-default-height 30
-     ;;         shell-default-position 'bottom
-     ;;         shell-default-shell 'eshell
-     ;;         shell-default-term-shell "/bin/zsh")
+     (shell :variables
+             shell-default-height 30
+             shell-default-position 'bottom
+             shell-default-shell 'eshell
+             shell-default-term-shell "/bin/zsh")
      )
 
    ;; List of additional packages that will be installed without being
