@@ -90,7 +90,7 @@ This function should only modify configuration layer settings."
      minimap
      (multiple-cursors :variables multiple-cursors-backend 'mc)
      ;(multiple-cursors :location local)
-     rebox
+     (rebox :variables rebox-enable-in-text-mode nil)
      neotree
      ;; version-control
      ascii-titles
