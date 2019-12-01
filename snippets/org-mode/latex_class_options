@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+#name : latex_class_options
+#key : latex_class_options
+#contributor : Manuel Eggimann
+# --
+#+latex_class_options: ${1:[a4paper]}
+$0

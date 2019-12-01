@@ -26,14 +26,13 @@ This function should only modify configuration layer settings."
    ;; a layer lazily. (default t)
    dotspacemacs-ask-for-lazy-installation t
 
-   ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '()
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(ansible
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Languages and file-type major modes  ;;
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -42,7 +41,7 @@ This function should only modify configuration layer settings."
      json
      html
      helm
-     python
+     (python :variables python-backend 'lsp)
      emacs-lisp
      markdown
      (latex :variables
@@ -89,7 +88,7 @@ This function should only modify configuration layer settings."
      chrome
      pandoc
      minimap
-     multiple-cursors
+     (multiple-cursors :variables multiple-cursors-backend 'mc)
      ;(multiple-cursors :location local)
      rebox
      neotree
@@ -111,6 +110,9 @@ This function should only modify configuration layer settings."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
+   ;; To use a local version of a package, use the `:location' property:
+   ;; '(your-package :location "~/path/to/your-package/")
+   ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(synosaurus
                                       (verilog-mode :location (recipe
                                                                :fetcher github
@@ -201,7 +203,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-use-spacelpa nil
 
    ;; If non-nil then verify the signature for downloaded Spacelpa archives.
-   ;; (default nil)
+   ;; (default t)
    dotspacemacs-verify-spacelpa-archives nil
 
    ;; If non-nil then spacemacs will check for updates at startup
@@ -239,7 +241,8 @@ It should only modify the values of Spacemacs settings."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 5)
+   dotspacemacs-startup-lists '((todos . 10)
+                                (recents . 5)
                                 (projects . 7))
 
    ;; True if the home buffer should respond to resize events. (default t)
@@ -248,10 +251,10 @@ It should only modify the values of Spacemacs settings."
    ;; Default major mode for a new empty buffer. Possible values are mode
    ;; names such as `text-mode'; and `nil' to use Fundamental mode.
    ;; (default `text-mode')
-   dotspacemacs-new-empty-buffer-major-mode 'text-mode
+   dotspacemacs-new-empty-buffer-major-mode 'org-mode
 
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'text-mode
+   dotspacemacs-scratch-mode 'org-mode
 
    ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
    ;; (default nil)
@@ -276,14 +279,13 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
 
-   ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
-   ;; quickly tweak the mode-line size to make separators look not too crappy.
+   ;; Default font or prioritized list of fonts.
    dotspacemacs-default-font '("Source Code Pro"
                                :size 13
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
-   ;; The leader key
+   ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
 
    ;; The key used for Emacs commands `M-x' (after pressing on the leader key).
@@ -337,7 +339,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil then the last auto saved layouts are resumed automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts nil
+   dotspacemacs-auto-resume-layouts t
 
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
    ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -374,10 +376,10 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'always)
    dotspacemacs-helm-use-fuzzy 'always
 
-   ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
-   ;; `p' several times cycles through the elements in the `kill-ring'.
-   ;; (default nil)
-   dotspacemacs-enable-paste-transient-state nil
+   ;; If non-nil, the paste transient-state is enabled. While enabled, after you
+   ;; paste something, pressing `C-j' and `C-k' several times cycles through the
+   ;; elements in the `kill-ring'. (default nil)
+   dotspacemacs-enable-paste-transient-state t
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
@@ -679,6 +681,9 @@ you should place your code here."
   ;; Use the builtin file attachement system for org-download
   (setq org-download-method 'attach)
 
+  ;; Allow alphabetical plain lists
+  (setq org-list-allow-alphabetical t)
+
   ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
   ;; the tex code in a latex environment for latex export.
   (require 'ox-latex)
@@ -745,10 +750,29 @@ you should place your code here."
 
 
   ;; Configure bibtex layer
-  (setq org-ref-default-bibliography '("~/org-ref/library.bib")
+  (defun org-ref-get-zotero-pdf-filename (key)
+    "Return the pdf filename indicated by zotero file field.
+Argument KEY is the bibtex key."
+    (let* ((results (org-ref-get-bibtex-key-and-file key))
+           (bibfile (cdr results))
+           entry)
+      (with-temp-buffer
+        (insert-file-contents bibfile)
+        (bibtex-set-dialect (parsebib-find-bibtex-dialect) t)
+        (bibtex-search-entry key nil 0)
+        (setq entry (bibtex-parse-entry))
+        (let ((e (org-ref-reftex-get-bib-field "file" entry)))
+          (if (> (length e) 4)
+              (let ((clean-field (replace-regexp-in-string "/+" "/" e)))
+                (let ((first-file (car (split-string clean-field ";" t))))
+                 first-file))
+            (message "PDF filename not found.")
+            )))))
+  (setq org-ref-get-pdf-filename-function 'org-ref-get-zotero-pdf-filename)
+
+  (setq org-ref-default-bibliography '("~/org-ref/zotero.bib")
         org-ref-pdf-directory "~/org-ref/pdfs"
         org-ref-bibliography-notes "~/org_notes/literature-notes.org"
-        org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename
         bibtex-completion-pdf-field "file")
 
 
@@ -834,6 +858,8 @@ This function is called at the very end of Spacemacs initialization."
     (:foreground default :background default :scale 1.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers
                  ("begin" "$1" "$" "$$" "\\(" "\\["))))
  '(org-image-actual-width 800)
+ '(org-latex-listings (quote minted))
+ '(org-latex-packages-alist (quote (("" "minted" nil))))
  '(org-pandoc-menu-entry
    (quote
     ((52 "to html5 and open." org-pandoc-export-to-html5-and-open)
@@ -884,9 +910,28 @@ This function is called at the very end of Spacemacs initialization."
      (89 "as slidy." org-pandoc-export-as-slidy)
      (122 "to dzslides and open." org-pandoc-export-to-dzslides-and-open)
      (90 "as dzslides." org-pandoc-export-as-dzslides))))
+ '(org-ref-bibliography-notes "~/org_notes/literature-notes.org")
+ '(org-ref-cite-onclick-function (quote org-ref-cite-click-helm))
+ '(org-ref-get-pdf-filename-function (quote org-ref-get-zotero-pdf-filename))
+ '(org-ref-insert-cite-function (quote org-ref-helm-insert-cite-link))
+ '(org-ref-insert-label-function (quote org-ref-helm-insert-label-link))
+ '(org-ref-insert-link-function (quote org-ref-helm-insert-cite-link))
+ '(org-ref-insert-ref-function (quote org-ref-helm-insert-ref-link))
+ '(org-ref-pdf-directory "~/org-ref/pdfs")
  '(package-selected-packages
    (quote
-    (yankpad engine-mode floobits highlight systemd pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv poporg ox-twbs flyspell-correct-helm flyspell-correct auto-dictionary mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (company helm gnu-elpa-keyring-update org-plus-contrib let-alist evil-mc jinja2-mode company-ansible ansible-doc ansible xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help lsp-ui lsp-python-ms python helm-lsp dap-mode bui tree-mode cquery company-lsp ccls lsp-mode plantuml-mode insert-shebang graphviz-dot-mode flycheck-bashate fish-mode company-shell stickyfunc-enhance srefactor org-wild-notifier org-alert org-tanglesync yankpad engine-mode floobits highlight systemd pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv poporg ox-twbs flyspell-correct-helm flyspell-correct auto-dictionary mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(projectile-find-dir-includes-top-level t)
+ '(projectile-mode t nil (projectile))
+ '(projectile-project-root-files
+   (quote
+    (".projectile" "rebar.config" "project.clj" "build.boot" "deps.edn" "SConstruct" "pom.xml" "build.sbt" "gradlew" "build.gradle" ".ensime" "Gemfile" "requirements.txt" "setup.py" "pyproject.toml" "tox.ini" "composer.json" "Cargo.toml" "mix.exs" "stack.yaml" "info.rkt" "DESCRIPTION" "TAGS" "GTAGS" "configure.in" "configure.ac" "cscope.out")))
+ '(projectile-project-root-files-bottom-up
+   (quote
+    (".projectile" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".projectile")))
+ '(projectile-project-root-files-functions (quote (projectile-root-bottom-up)))
+ '(projectile-project-root-files-top-down-recurring (quote (".projectile" ".svn" "CVS" "Makefile")))
+ '(projectile-switch-project-action (quote helm-projectile))
  '(spacemacs-theme-custom-colors (quote ((base . "#ffffff"))))
  '(verilog-indent-level-behavioral 2)
  '(verilog-indent-level-declaration 2)

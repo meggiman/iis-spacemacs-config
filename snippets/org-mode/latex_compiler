@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+#name : latex_compiler
+#key : latex_compiler
+#contributor : Manuel Eggimann
+# --
+#+latex_compiler: $1
+$0

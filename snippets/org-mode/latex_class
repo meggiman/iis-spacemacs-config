@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+#name : latex_class
+#key : latex_class
+#contributor : Manuel Eggimann
+# --
+#+latex_class: $1
+$0

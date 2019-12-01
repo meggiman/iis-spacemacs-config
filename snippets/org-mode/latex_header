@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+#name : latex_header
+#key : latex_header
+#contributor : Manuel Eggimann
+# --
+#+latex_header: $1
+$0

@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+#name : caption
+#key : caption
+#contributor : Manuel Eggimann
+# --
+
+${1:#+CAPTION: $2}
+${3:#+ATTR_LATEX: :width ${4:0.8}\textwidth ${5::placement [${6:!h}]}}
+${7:#+LABEL: fig:$8}
+$0
