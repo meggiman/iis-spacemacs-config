@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(ansible
+   '(php
+     ansible
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Languages and file-type major modes  ;;
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -95,7 +96,8 @@ This function should only modify configuration layer settings."
      ;; version-control
      ascii-titles
      imenu-list
-     
+     helm-search-tools
+
      ;;;;;;;;;;;;
      ;; Others ;;
      ;;;;;;;;;;;;
@@ -339,7 +341,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil then the last auto saved layouts are resumed automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts t
+   dotspacemacs-auto-resume-layouts nil
 
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
    ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -587,15 +589,10 @@ you should place your code here."
   ;;Remap M-z to avy-zap-up-to-char
   (global-set-key (kbd "M-z") 'avy-zap-up-to-char)
 
+  (define-key org-mode-map (kbd "M-RET") nil)
+
   ;; Remap M-m s e to iedit-mode instead of evil-iedit-mode
   (spacemacs/set-leader-keys "se" 'iedit-mode)
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; Enable synctex correlation
-  (setq TeX-source-correlate-method 'synctex)
-  ;; Enable synctex generation. Even though the command shows
-  ;; as "latex" pdflatex is actually called
-  (custom-set-variables '(LaTeX-command "latex -synctex=1") )
 
   ;;Add auto-revert-mode to docview hook so the pdf preview updates upon rebuild
   ;;of the latex source.
@@ -651,11 +648,11 @@ you should place your code here."
              (file+headline "~/org_notes/quicknotes.org" "Bookmarks")
              "* %a :website:%^G\n\n%U %?\n\n%:initial")
             ("s" "Weekly Schedule" entry
-             (file+datetree "~/org_notes/schedules.org")
+             (file+olp+datetree "~/org_notes/schedules.org")
              "* Week %<%W>\n** Monday\n      |   | Task  | Duration |\n      |---+-------+----------|\n      |   |%?       |          |\n      |---+-------+----------|\n      | # | Total |    00:00 |\n      #+TBLFM: @>$3=vsum(@2..@-1);U\n** Thuesday\n      |   | Task  | Duration |\n      |---+-------+----------|\n      |   |       |          |\n      |---+-------+----------|\n      | # | Total |    00:00 |\n      #+TBLFM: @>$3=vsum(@2..@-1);U\n** Wednesday\n      |   | Task  | Duration |\n      |---+-------+----------|\n      |   |       |          |\n      |---+-------+----------|\n      | # | Total |    00:00 |\n      #+TBLFM: @>$3=vsum(@2..@-1);U\n** Thursday\n      |   | Task  | Duration |\n      |---+-------+----------|\n      |   |       |          |\n      |---+-------+----------|\n      | # | Total |    00:00 |\n      #+TBLFM: @>$3=vsum(@2..@-1);U\n** Friday\n      |   | Task  | Duration |\n      |---+-------+----------|\n      |   |       |          |\n      |---+-------+----------|\n      | # | Total |    00:00 |\n      #+TBLFM: @>$3=vsum(@2..@-1);U")
             ("m" "New meeting notes int meetings.org" entry (file+datetree "~/org_notes/meetings.org")
              "* %U - %^{Topic of the meeting?}%^G\n  %?" )
-            ("j" "Journal" entry (file+datetree "~/org_notes/journal.org")
+            ("j" "Journal" entry (file+olp+datetree "~/org_notes/journal.org")
              "* %?\n\tEntered on %U\n  %i" :clock-in t :clock-keep t)))
     ;; Ein "!" bedeutet Zeitstempel
     ;; Ein "@" bedeutet Notiz
@@ -689,7 +686,13 @@ you should place your code here."
   (require 'ox-latex)
   (require 'mscgen-mode)
   ;; Enable additional babel languages
-  (org-babel-do-load-languages 'org-babel-load-languages '((makefile t) (latex t) (shell t) (python t) (js t) (mscgen t)))
+  (org-babel-do-load-languages 'org-babel-load-languages '(
+                                                           (makefile t)
+                                                           (latex t)
+                                                           (shell t)
+                                                           (python t)
+                                                           (js t)
+                                                           (mscgen t)))
 
   (push "~/org_notes/lib" load-path)
 
@@ -781,8 +784,21 @@ Argument KEY is the bibtex key."
     (define-key pdf-view-mode-map (kbd "<C-mouse-5>") (lambda () (interactive) (pdf-view-shrink 1.05)))
     (define-key pdf-view-mode-map (kbd "<C-mouse-4>") (lambda () (interactive) (pdf-view-enlarge 1.05))))
 
+  ;; Use PDFview as Auctex PDF viewer
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+    TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+    TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
+  (setq pdf-sync-backward-display-action t)
+  (setq pdf-sync-forward-display-action t)
+
+ ;; to have the buffer refresh after compilation
+ (add-hook 'TeX-after-compilation-finished-functions
+           #'TeX-revert-document-buffer)
 
   )
+
+
+
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Do not write anything past this comment. This is where Emacs will
@@ -798,7 +814,8 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(LaTeX-command "latex -synctex=1")
+ '(LaTeX-command
+   "latex-2016 -synctex=1 -shell-escape -interaction nonstopmode")
  '(TeX-command-list
    (quote
     (("TeX" "%(PDF)%(tex) %(file-line-error) %`%(extraopts) %S%(PDFout)%(mode)%' %t" TeX-run-TeX nil
@@ -850,16 +867,17 @@ This function is called at the very end of Spacemacs initialization."
  '(ispell-program-name "/usr/sepp/bin/aspell-0.60.6")
  '(mouse-wheel-progressive-speed nil)
  '(mouse-wheel-scroll-amount (quote (3 ((shift) . 1) ((control)))))
- '(org-agenda-files
-   (quote
-    ("/home/meggiman/org_notes/hd-computing.org" "/home/meggiman/org_notes/journal.org" "/home/meggiman/org_notes/meetings.org" "/home/meggiman/org_notes/pulp.org" "/home/meggiman/org_notes/pulpissimo_training.org" "/home/meggiman/org_notes/quicknotes.org" "/home/meggiman/org_notes/schedules.org" "/home/meggiman/org_notes/tasks.org")))
  '(org-format-latex-options
    (quote
     (:foreground default :background default :scale 1.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers
                  ("begin" "$1" "$" "$$" "\\(" "\\["))))
- '(org-image-actual-width 800)
+ '(org-image-actual-width 400)
  '(org-latex-listings (quote minted))
  '(org-latex-packages-alist (quote (("" "minted" nil))))
+ '(org-latex-pdf-process
+   (quote
+    ("latexmk-2016 -pdflatex='pdflatex -shell-escape -interaction nonstopmode' -pdf -bibtex -f %f")))
+ '(org-latex-prefer-user-labels t)
  '(org-pandoc-menu-entry
    (quote
     ((52 "to html5 and open." org-pandoc-export-to-html5-and-open)
@@ -920,7 +938,7 @@ This function is called at the very end of Spacemacs initialization."
  '(org-ref-pdf-directory "~/org-ref/pdfs")
  '(package-selected-packages
    (quote
-    (company helm gnu-elpa-keyring-update org-plus-contrib let-alist evil-mc jinja2-mode company-ansible ansible-doc ansible xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help lsp-ui lsp-python-ms python helm-lsp dap-mode bui tree-mode cquery company-lsp ccls lsp-mode plantuml-mode insert-shebang graphviz-dot-mode flycheck-bashate fish-mode company-shell stickyfunc-enhance srefactor org-wild-notifier org-alert org-tanglesync yankpad engine-mode floobits highlight systemd pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv poporg ox-twbs flyspell-correct-helm flyspell-correct auto-dictionary mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (wgrep-helm helm-fzf wgrep ox-ipynb jupyter websocket zmq php-mode company helm gnu-elpa-keyring-update org-plus-contrib let-alist evil-mc jinja2-mode company-ansible ansible-doc ansible xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help lsp-ui lsp-python-ms python helm-lsp dap-mode bui tree-mode cquery company-lsp ccls lsp-mode plantuml-mode insert-shebang graphviz-dot-mode flycheck-bashate fish-mode company-shell stickyfunc-enhance srefactor org-wild-notifier org-alert org-tanglesync yankpad engine-mode floobits highlight systemd pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv poporg ox-twbs flyspell-correct-helm flyspell-correct auto-dictionary mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(projectile-find-dir-includes-top-level t)
  '(projectile-mode t nil (projectile))
  '(projectile-project-root-files
@@ -932,6 +950,7 @@ This function is called at the very end of Spacemacs initialization."
  '(projectile-project-root-files-functions (quote (projectile-root-bottom-up)))
  '(projectile-project-root-files-top-down-recurring (quote (".projectile" ".svn" "CVS" "Makefile")))
  '(projectile-switch-project-action (quote helm-projectile))
+ '(reftex-default-bibliography (quote ("/home/meggiman/org-ref/zotero.bib")))
  '(spacemacs-theme-custom-colors (quote ((base . "#ffffff"))))
  '(verilog-indent-level-behavioral 2)
  '(verilog-indent-level-declaration 2)
