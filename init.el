@@ -601,7 +601,7 @@ you should place your code here."
 
   ;; Configure org export command for latex pdf
   (setq org-latex-pdf-process
-        '("latexmk -pdflatex='pdflatex -shell-escape -interaction nonstopmode' -pdf -bibtex -f %f"))
+        '("latexmk -pdflatex='pdflatex -shell-escape --synctex=1 -interaction nonstopmode' -pdf -bibtex -f %f"))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; flymd fix to use Firefox instead of chrome for Markdown live preview ;;
@@ -786,14 +786,17 @@ Argument KEY is the bibtex key."
 
   ;; Use PDFview as Auctex PDF viewer
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-    TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-    TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
+        TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+        TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
   (setq pdf-sync-backward-display-action t)
   (setq pdf-sync-forward-display-action t)
 
- ;; to have the buffer refresh after compilation
- (add-hook 'TeX-after-compilation-finished-functions
-           #'TeX-revert-document-buffer)
+  ;; to have the buffer refresh after compilation
+  (add-hook 'TeX-after-compilation-finished-functions
+            #'TeX-revert-document-buffer)
+
+  ;; Load flycheck-grammarly
+  ;; (require 'flycheck-grammarly)
 
   )
 
