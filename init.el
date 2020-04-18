@@ -753,6 +753,7 @@ you should place your code here."
 
 
   ;; Configure bibtex layer
+  (setq reftex-default-bibliography "~/org-ref/zotero.bib")
   (defun org-ref-get-zotero-pdf-filename (key)
     "Return the pdf filename indicated by zotero file field.
 Argument KEY is the bibtex key."
@@ -953,7 +954,6 @@ This function is called at the very end of Spacemacs initialization."
  '(projectile-project-root-files-functions (quote (projectile-root-bottom-up)))
  '(projectile-project-root-files-top-down-recurring (quote (".projectile" ".svn" "CVS" "Makefile")))
  '(projectile-switch-project-action (quote helm-projectile))
- '(reftex-default-bibliography (quote ("/home/meggiman/org-ref/zotero.bib")))
  '(spacemacs-theme-custom-colors (quote ((base . "#ffffff"))))
  '(verilog-indent-level-behavioral 2)
  '(verilog-indent-level-declaration 2)
