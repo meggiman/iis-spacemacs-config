@@ -13,5 +13,5 @@ This repository contains my personal Spacemacs configuration for my daily work a
     git clone https://github.com/meggiman/iis-spacemacs-config.git ~/.spacemacs.d
     #+END_SRC
  4. Start emacs and enjoy the customizations (the first start after installation might take a considerable 
-    time as emacs has to download all the necessary pacakges)
+    time as emacs has to download all the necessary packages)
 
