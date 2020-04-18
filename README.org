@@ -6,9 +6,12 @@ This repository contains my personal Spacemacs configuration for my daily work a
  2. Install the latest Spacemacs
     #+BEGIN_SRC shell
     git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+    git checkout develop
     #+END_SRC
  3. Install the spacemacs configurations from this repository
     #+BEGIN_SRC shell
     git clone https://github.com/meggiman/iis-spacemacs-config.git ~/.spacemacs.d
     #+END_SRC
+ 4. Start emacs and enjoy the customizations (the first start after installation might take a considerable 
+    time as emacs has to download all the necessary pacakges)
 
