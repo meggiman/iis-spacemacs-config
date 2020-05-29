@@ -600,10 +600,49 @@ you should place your code here."
   ;;Remap M-z to avy-zap-up-to-char
   (global-set-key (kbd "M-z") 'avy-zap-up-to-char)
 
-  (define-key org-mode-map (kbd "M-RET") nil)
-
   ;; Remap M-m s e to iedit-mode instead of evil-iedit-mode
   (spacemacs/set-leader-keys "se" 'iedit-mode)
+
+  ;; Override default behavior of C-Backspace which always deletes a whole word
+  ;; and in my opinion behaves counter intuitive since a lot of the time I just
+  ;; want to delete some whitespace instead of the word on the previous line
+  ;; the following implmenetation deletes the previous word or all the
+  ;; whitespace depeneding on what is in front of the cursor
+  (defun custom/backward-kill-word ()
+    "Customize/Smart backward-kill-word."
+    (interactive)
+    (let* ((cp (point))
+           (backword)
+           (end)
+           (space-pos)
+           (backword-char (if (bobp)
+                              ""           ;; cursor in begin of buffer
+                            (buffer-substring cp (- cp 1)))))
+      (if (equal (length backword-char) (string-width backword-char))
+          (progn
+            (save-excursion
+              (setq backword (buffer-substring (point) (progn (forward-word -1) (point)))))
+            (setq ab/debug backword)
+            (save-excursion
+              (when (and backword          ;; when backword contains space
+                         (s-contains? " " backword))
+                (setq space-pos (ignore-errors (search-backward " ")))))
+            (save-excursion
+              (let* ((pos (ignore-errors (search-backward-regexp "\n")))
+                     (substr (when pos (buffer-substring pos cp))))
+                (when (or (and substr (s-blank? (s-trim substr)))
+                          (s-contains? "\n" backword))
+                  (setq end pos))))
+            (if end
+                (kill-region cp end)
+              (if space-pos
+                  (kill-region cp space-pos)
+                (backward-kill-word 1))))
+        (kill-region cp (- cp 1)))         ;; word is non-english word
+      ))
+
+  (global-set-key  [C-backspace]
+            'custom/backward-kill-word)
 
   ;;Add auto-revert-mode to docview hook so the pdf preview updates upon rebuild
   ;;of the latex source.
