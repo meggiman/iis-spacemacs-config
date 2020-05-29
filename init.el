@@ -139,7 +139,7 @@ This function should only modify configuration layer settings."
                                       ;;                                :fetcher github
                                       ;;                                :repo
                                       ;;                                "jcs-elpa/flycheck-grammarly"))
-                                      ;; cdlatex
+                                      cdlatex
                                       ;; ox-latex-subfigure
                                       (ospl-mode :location (recipe
                                                             :fetcher github
@@ -743,7 +743,7 @@ you should place your code here."
     ;; the tex code in a latex environment for latex export.
     (require 'ox-latex)
     ;; Enable subfigure support in org mode (see https://github.com/linktohack/ox-latex-subfigure)
-    (require 'ox-latex-subfigure)
+    ;; (require 'ox-latex-subfigure)
     (require 'mscgen-mode)
     ;; Enable additional babel languages
     (org-babel-do-load-languages 'org-babel-load-languages '(
