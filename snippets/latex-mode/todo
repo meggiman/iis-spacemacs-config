@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+#name : todo
+#key : \todo
+#contributor : Manuel Eggimann
+# --
+\todo${1:[author=${2:`(user-full-name)`}]}{$3}
+$0
