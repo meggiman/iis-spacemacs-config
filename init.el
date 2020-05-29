@@ -102,10 +102,10 @@ This function should only modify configuration layer settings."
      ;; Others ;;
      ;;;;;;;;;;;;
      (shell :variables
-             shell-default-height 30
-             shell-default-position 'bottom
-             shell-default-shell 'eshell
-             shell-default-term-shell "/bin/zsh")
+            shell-default-height 30
+            shell-default-position 'bottom
+            shell-default-shell 'eshell
+            shell-default-term-shell "/bin/zsh")
      )
 
    ;; List of additional packages that will be installed without being
@@ -727,112 +727,121 @@ you should place your code here."
     (setq org-log-into-drawer t)
 
     ;; Configure org agenda
-    (setq org-agenda-files (list "~/org_notes/"  "~/org-notes-private")))
+    (setq org-agenda-files (list "~/org_notes/"))
     (setq org-agenda-todo-list-sublevels nil)
 
-  ;; Use the builtin file attachement system for org-download
-  (setq org-download-method 'attach)
+    ;; Use the builtin file attachement system for org-download
+    (setq org-download-method 'attach)
 
-  ;; Allow alphabetical plain lists
-  (setq org-list-allow-alphabetical t)
+    ;; Allow alphabetical plain lists
+    (setq org-list-allow-alphabetical t)
 
-  ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
-  ;; the tex code in a latex environment for latex export.
-  (require 'ox-latex)
-  (require 'mscgen-mode)
-  ;; Enable additional babel languages
-  (org-babel-do-load-languages 'org-babel-load-languages '(
-                                                           (makefile t)
-                                                           (latex t)
-                                                           (shell t)
-                                                           (python t)
-                                                           (js t)
-                                                           (mscgen t)))
+    ;; Make M-RET 
+    ;; (define-key org-mode-map (kbd "M-RET") nil)
 
-  (push "~/org_notes/lib" load-path)
+    ;; Enables latex src blocks to be evaluated by babel. Results in wrapping
+    ;; the tex code in a latex environment for latex export.
+    (require 'ox-latex)
+    ;; Enable subfigure support in org mode (see https://github.com/linktohack/ox-latex-subfigure)
+    (require 'ox-latex-subfigure)
+    (require 'mscgen-mode)
+    ;; Enable additional babel languages
+    (org-babel-do-load-languages 'org-babel-load-languages '(
+                                                             (makefile t)
+                                                             (latex t)
+                                                             (shell t)
+                                                             (python t)
+                                                             (js t)
+                                                             (mscgen t)))
+
+    (push "~/org_notes/lib" load-path)
 
   ;;; Org Capture
   ;;;; Thank you random guy from StackOverflow
   ;;;; http://stackoverflow.com/questions/23517372/hook-or-advice-when-aborting-org-capture-before-template-selection
 
-  (defadvice org-capture
-      (after make-full-window-frame activate)
-    "Advise capture to be the only window when used as a popup"
-    (if (equal "emacs-capture" (frame-parameter nil 'name))
-        (delete-other-windows)))
+    (defadvice org-capture
+        (after make-full-window-frame activate)
+      "Advise capture to be the only window when used as a popup"
+      (if (equal "emacs-capture" (frame-parameter nil 'name))
+          (delete-other-windows)))
 
-  (defadvice org-capture-finalize
-      (after delete-capture-frame activate)
-    "Advise capture-finalize to close the frame"
-    (if (equal "emacs-capture" (frame-parameter nil 'name))
-        (delete-frame)))
-  (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
-  (setq org-image-actual-width (/ (display-pixel-width) 3)) ;; Set image size in org-mode to 1/3 of the display width
-  (setq org-duration-format (quote h:mm))
-
-  ;; Org protocol config
-  (require 'edit-server)
-  (edit-server-start)
-  (require 'org-protocol)
-  (require 'org-protocol-capture-html)
-
-  ;; Enable autofill  mode by default in org buffers
-  (add-hook 'org-mode-hook 'auto-fill-mode)
-
-  ;; Load Poporg to use org mode for comment strings in other major modes.
-  (autoload 'poporg-dwim "poporg" nil t)
-  (global-set-key (kbd "C-c \"") 'poporg-dwim)
-
-  ;; Configure org-mode to invoke thunderlinks with thunderbird
-  (when (string-equal system-type "gnu/linux")
-    ;; modify this for your system
-    (setq thunderbird-program "thunderbird")
-
-    (defun org-message-thunderlink-open (slash-message-id)
-      "Handler for org-link-set-parameters that converts a standard message:// link into
-   a thunderlink and then invokes thunderbird."
-      ;; remove any / at the start of slash-message-id to create real message-id
-      (let ((message-id
-             (replace-regexp-in-string (rx bos (* "/"))
-                                       ""
-                                       slash-message-id)))
-        (start-process
-         (concat "thunderlink: " message-id)
-         nil
-         thunderbird-program
-         "-thunderlink"
-         (concat "thunderlink://messageid=" message-id)
-         )))
-    ;; on message://aoeu link, this will call handler with //aoeu
-    (org-link-set-parameters "message" :follow #'org-message-thunderlink-open))
-
-
-  ;; Configure bibtex layer
-  (setq reftex-default-bibliography "~/org-ref/zotero.bib")
-  (defun org-ref-get-zotero-pdf-filename (key)
-    "Return the pdf filename indicated by zotero file field.
+    (defadvice org-capture-finalize
+        (after delete-capture-frame activate)
+      "Advise capture-finalize to close the frame"
+      (if (equal "emacs-capture" (frame-parameter nil 'name))
+          (delete-frame)))
+    (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
+    (setq org-image-actual-width (/ (display-pixel-width) 3)) ;; Set image size in org-mode to 1/3 of the display width
+    (setq org-duration-format (quote h:mm))
+    ;; Configure bibtex layer
+    (defun org-ref-get-zotero-pdf-filename (key)
+      "Return the pdf filename indicated by zotero file field.
 Argument KEY is the bibtex key."
-    (let* ((results (org-ref-get-bibtex-key-and-file key))
-           (bibfile (cdr results))
-           entry)
-      (with-temp-buffer
-        (insert-file-contents bibfile)
-        (bibtex-set-dialect (parsebib-find-bibtex-dialect) t)
-        (bibtex-search-entry key nil 0)
-        (setq entry (bibtex-parse-entry))
-        (let ((e (org-ref-reftex-get-bib-field "file" entry)))
-          (if (> (length e) 4)
-              (let ((clean-field (replace-regexp-in-string "/+" "/" e)))
-                (let ((first-file (car (split-string clean-field ";" t))))
-                 first-file))
-            (message "PDF filename not found.")
-            )))))
-  (setq org-ref-get-pdf-filename-function 'org-ref-get-zotero-pdf-filename)
+      (let* ((results (org-ref-get-bibtex-key-and-file key))
+             (bibfile (cdr results))
+             entry)
+        (with-temp-buffer
+          (insert-file-contents bibfile)
+          (bibtex-set-dialect (parsebib-find-bibtex-dialect) t)
+          (bibtex-search-entry key nil 0)
+          (setq entry (bibtex-parse-entry))
+          (let ((e (org-ref-reftex-get-bib-field "file" entry)))
+            (if (> (length e) 4)
+                (let ((clean-field (replace-regexp-in-string "/+" "/" e)))
+                  (let ((first-file (car (split-string clean-field ";" t))))
+                    first-file))
+              (message "PDF filename not found.")
+              )))))
+    (setq org-ref-get-pdf-filename-function 'org-ref-get-zotero-pdf-filename)
 
-  (setq org-ref-default-bibliography '("~/org-ref/zotero.bib")
-        org-ref-pdf-directory "~/org-ref/pdfs"
-        org-ref-bibliography-notes "~/org_notes/literature-notes.org"
-        bibtex-completion-pdf-field "file")
+    (setq org-ref-default-bibliography '("~/org-ref/zotero.bib")
+          org-ref-pdf-directory "~/org-ref/pdfs"
+          org-ref-bibliography-notes "~/org_notes/literature-notes.org"
+          bibtex-completion-pdf-field "file")
+    ;; Org protocol config
+    (require 'edit-server)
+    (edit-server-start)
+    (require 'org-protocol)
+    (require 'org-protocol-capture-html)
+
+    ;; Enable autofill  mode by default in org buffers
+    (add-hook 'org-mode-hook 'auto-fill-mode)
+
+    ;; Load Poporg to use org mode for comment strings in other major modes.
+    (autoload 'poporg-dwim "poporg" nil t)
+    (global-set-key (kbd "C-c \"") 'poporg-dwim)
+
+    ;; Configure org-mode to invoke thunderlinks with thunderbird
+    (when (string-equal system-type "gnu/linux")
+      ;; modify this for your system
+      (setq thunderbird-program "thunderbird")
+
+      (defun org-message-thunderlink-open (slash-message-id)
+        "Handler for org-link-set-parameters that converts a standard message:// link into
+   a thunderlink and then invokes thunderbird."
+        ;; remove any / at the start of slash-message-id to create real message-id
+        (let ((message-id
+               (replace-regexp-in-string (rx bos (* "/"))
+                                         ""
+                                         slash-message-id)))
+          (start-process
+           (concat "thunderlink: " message-id)
+           nil
+           thunderbird-program
+           "-thunderlink"
+           (concat "thunderlink://messageid=" message-id)
+           )))
+      ;; on message://aoeu link, this will call handler with //aoeu
+      (org-link-set-parameters "message" :follow #'org-message-thunderlink-open))
+    (require 'org-inlinetask)
+    ;; enable cdlatex extensions for org mode (see https://orgmode.org/manual/CDLaTeX-mode.html#CDLaTeX-mode)
+    (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+
+    )
+
+  
+
 
 
   ;; Configure PDFview to zoom with mousewheel
@@ -860,10 +869,10 @@ Argument KEY is the bibtex key."
 
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; Do not write anything past this comment. This is where Emacs will
-  ;; auto-generate custom variable definitions.
+;; Do not write anything past this comment. This is where Emacs will
+;; auto-generate custom variable definitions.
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defun dotspacemacs/emacs-custom-settings ()
+(defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
