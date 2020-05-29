@@ -33,8 +33,7 @@
   '((helm-fzf :location (recipe
                          :fetcher github
                          :repo "ibmandura/helm-fzf"))
-    wgrep-helm
-    helm))
+    wgrep-helm))
 
 (defun helm-search-tools/init-wgrep-helm ()
   (use-package wgrep-helm
