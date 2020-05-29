@@ -134,7 +134,18 @@ This function should only modify configuration layer settings."
                                       virtualenvwrapper
                                       poporg
                                       pocket-reader
-                                      riscv-mode)
+                                      riscv-mode
+                                      ;; (flycheck-grammarly :location (recipe
+                                      ;;                                :fetcher github
+                                      ;;                                :repo
+                                      ;;                                "jcs-elpa/flycheck-grammarly"))
+                                      ;; cdlatex
+                                      ;; ox-latex-subfigure
+                                      (ospl-mode :location (recipe
+                                                            :fetcher github
+                                                            :repo "stettberger/ospl-mode"))
+                                      adaptive-wrap
+                                      )
 
 
    ;; A list of packages that cannot be updated.
