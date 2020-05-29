@@ -653,6 +653,11 @@ you should place your code here."
   (setq org-latex-pdf-process
         '("latexmk -pdflatex='pdflatex -shell-escape --synctex=1 -interaction nonstopmode' -pdf -bibtex -f %f"))
 
+  ;; Add hook to autostart "one sentence per line mode" when in Latex buffers
+  (use-package ospl-mode
+    :hook (TeX-mode . ospl-mode))
+
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; flymd fix to use Firefox instead of chrome for Markdown live preview ;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
