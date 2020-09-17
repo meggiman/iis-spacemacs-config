@@ -13,8 +13,9 @@
 (defconst verilog-packages
   '((verilog-mode :location (recipe
                              :fetcher github
-                             :repo "meggiman/verilog-mode"
-                             :min-version 1))
+                             :repo "veripool/verilog-mode"
+                             :min-version 2
+                             :commit "master"))
     company
     indent-guide
     helm-gtags
@@ -75,7 +76,8 @@
       (spacemacs/declare-prefix-for-mode 'verilog-mode "ms" "syntax-checking")
       (spacemacs/set-leader-keys-for-major-mode 'verilog-mode
         "sc" 'flycheck-hdl-questasim-clear-workdir
-        "st" 'flycheck-hdl-questasim-toggle-workdir)))
+        "st" 'flycheck-hdl-questasim-toggle-workdir
+        "sa" 'flycheck-hdl-questasim-analyze-workdir)))
   (add-hook 'verilog-mode-hook 'flycheck-mode))
 
 (defun verilog/post-init-ggtags ()
