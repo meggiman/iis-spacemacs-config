@@ -77,6 +77,10 @@ This function should only modify configuration layer settings."
      (spell-checking :variables spell-checking-enable-by-default nil)
      gtags
      semantic
+     centaur-tabs
+     (treemacs :variables
+               treemacs-use-filewatch-mode t
+               treemacs-use-git-mode 'deferred)
 
      ;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Tools & Utilities  ;;

@@ -1,0 +1,92 @@
+-*- buffer-read-only: t -*-
+
+#+title: Emacs Cheatsheet for IIS Students
+* Metakeys
+
+  Here is a small table that indicates what the different abbreviations you
+  might encounter in tutorials and the documentation mean:
+  
+  | Abbrevation     | Key to press                                    |
+  |-----------------+-------------------------------------------------|
+  | RET             | Enter/Return key                                |
+  | SPC             | Space Key                                       |
+  | M-<something>   | Keep pressing Alt and type <something>          |
+  | C-<something>   | Keep pressing Ctrl and type <something>         |
+  | C-M-<something> | Keep pressing Alt and Ctrl and type <something> |
+  | <left>          | Arrow left key                                  |
+  | <right>         | Arrow right key                                 |
+  | <up>            | Arrow up key                                    |
+  | <down>          | Arrow down key                                  |
+  | <f1>            | Hit the F1 key                                  |
+  | <DEL>           | Backspace                                       |
+  | <next>          | Page down                                       |
+  | <prio>          | Page up                                         |
+
+* Basics
+  | Function                                                         | Shortcut  |
+  |------------------------------------------------------------------+-----------|
+  | Cancel                                                           | ~C-g~     |
+  | Open File (or create one if the entered name does not yet exist) | ~C-x C-f~ |
+  | Close File (buffer  in emacs terminology)                        | ~C-x k~   |
+  | Safe current buffer (file)                                       | ~C-x C-s~ |
+  | Undo (not in newbie-mode)                                        | ~C-x u~   |
+  | Run function (by typing its name instead of using the  shortcut) | ~M-x~     |
+  | Close Emacs                                                      | ~C-x C-c~ |
+* Moving the Cursor
+  | Entity to move over         | Forward | Backward |
+  |-----------------------------+---------+----------|
+  | Character                   | ~C-f~   | ~C-b~    |
+  | Word                        | ~M-f~   | ~M-b~    |
+  | Line                        | ~C-n~   | ~C-p~    |
+  | Go to line beginning or end | ~C-e~   | ~C-a~    |
+  | Sentence                    | ~M-e~   | ~M-a~    |
+  | Matching brackets           | ~C-M-f~ | ~C-M-b~  |
+
+  | Function                              | Shortcut |
+  |---------------------------------------+----------|
+  | Scroll Page down (not in newbie-mode) | ~C-v~    |
+  | Scroll Page up                        | ~M-v~    |
+  | Center around cursor                  | ~C-l~    |  
+
+* Editing
+** Marking Text
+   | Function                                         | Shortcut                                           |
+   |--------------------------------------------------+----------------------------------------------------|
+   | *Enable marking* (set mark in emacs terminology) | ~C-SPC~                                            |
+   | *Disable marking*                                | ~C-SPC~ (the shortcut just toggles between the two |
+
+** Copy Paste (Killing and Yanking in Emacs Terminology)
+   | Function         | Shortcut                            |
+   |------------------+-------------------------------------|
+   | *Copy*           | ~M-w~                               |
+   | *Cut*            | ~C-w~                               |
+   | *Paste*          | ~C-y~                               |
+   | *Paste previous* | ~C-y~ and then repeadetly hit ~M-y~ |
+
+* Splitscreen/Multiple Windows
+  | Function                                              | Shortcut |
+  |-------------------------------------------------------+----------|
+  | *Switch to next window*                               | ~C-x o~  |
+  | *Split screen horizontally*                           | ~C-x 3~  |
+  | *Split screen vertically*                             | ~C-x 2~  |
+  | *Make current window the only one* (maximize)         | ~C-x 1~  |
+  | *Close current window* (just the window not the file) | ~C-x 0~  |
+
+* File (Buffer) Handling
+  Buffer is the emacs jargon for an opened file or temporary text window (e.g.
+  message buffer that contains error messages) . A file that's opened doesn't
+  necessarily also have to be visible. You can have as many opened (and maybe
+  also partially edited files) as you want and only show a subset of them on the
+  screen within one or several (splitscreen) windows.
+
+  | Function                                                                             | Shortcut |
+  |--------------------------------------------------------------------------------------+----------|
+  | *Switch to another buffer* (in Spacemacs this show a nice list of all opened buffers | ~C-x b~  |
+  | *Close (kill) the buffer/file* (will ask if you want to safe if it was modified)     | ~C-x k~  |
+
+* Searching/Replacing (Spacemacs specific)
+  | Function                             | Shortcut  |
+  |--------------------------------------+-----------|
+  | *Search in current file (buffer)*    | ~M-m s s~ |
+  | *Search in all files of a directory* | ~M-m s f~ |
+  | *Search and replace*                 | ~M-%~     |
