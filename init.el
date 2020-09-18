@@ -47,19 +47,20 @@ This function should only modify configuration layer settings."
      lsp
      gtags
      ;; markdown
-     multiple-cursors
+     (multiple-cursors :variables
+                       multiple-cursors-backend 'mc)
      org
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
      ;; spell-checking
      syntax-checking
+     centaur-tabs
      ;; version-control
      (treemacs :variables
-               treemacs-use-follow-mode 'tag
                treemacs-use-filewatch-mode t
                treemacs-use-git-mode 'deferred)
-     tabbar)
+     )
 
 
    ;; List of additional packages that will be installed without being
@@ -491,6 +492,9 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  ;; Override some colors of the default color scheme
+  (custom-set-variables '(spacemacs-theme-custom-colors
+                          '((bg1 . "#333333"))))
   )
 
 (defun dotspacemacs/user-load ()
@@ -522,15 +526,92 @@ before packages are loaded."
   ;; Enable toolbar
   (menu-bar-mode)
 
+  ;; Add some utility functions to the toolbar
+  (require 'easymenu)
+  (defun disable-newbie-mode ()
+    "Disable the newbie mode customizations."
+    (interactive )
+    (if (y-or-n-p (format "Are you sure you want to disable newbie-mode? This will remove the toolbar!"))
+        (progn (cua-mode -1)
+               (global-unset-key (kbd "C-s"))
+               (global-set-key (kbd "C-s") isearch-forward)
+               (menu-bar-mode -1))
+      )
+    )
+
+  (defun enable-newbie-mode ()
+    "Enable a set of customizations to make it easier for new
+emacs users to use the editor."
+    (interactive)
+    (cua-mode)
+    (menu-bar-mode 1)
+
+    ;; Map Ctrl-s to safe-buffer
+    (global-unset-key (kbd "C-s"))
+    (global-set-key (kbd "C-s") 'save-buffer)
+    )
+
+  (defun show-cheatsheet-buffer ()
+    "Show the cheatsheet for keyboard shortcuts."
+    (interactive)
+    (find-file-other-frame (concat dotspacemacs-directory "/docs/cheatsheet.org" ))
+    )
+
+  (defun show-iis-emacs-intro-buffer ()
+    "Show the emacs introduction for IIS students in a new buffer."
+    (interactive)
+    (find-file (concat dotspacemacs-directory "/docs/intro.org"))
+    )
+
+  (easy-menu-define vlsi1-menu global-map "IIS ETH Specific commands"
+		'("IIS Student"
+      ["Show Emacs Intro for IIS Students" show-iis-emacs-intro-buffer]
+      ["Show Cheatsheet in new Window" show-cheatsheet-buffer]
+			["Disable newbie-mode"  disable-newbie-mode t]
+			))
+
+
 
   ;; Enable treemacs mode and add hook to buffer switch to auto update treemacs with current projectile root
+  (require 'treemacs)
+  (when (treemacs-workspace->is-empty?)
+    (treemacs-do-add-project-to-workspace user-home-directory "Home"))
+
   (treemacs)
-  (require 'switch-buffer-functions)
-  (add-hook 'switch-buffer-functions
-            (lambda (prev curr)
-              (when (buffer-file-name curr)
-                (treemacs-display-current-project-exclusively)
-                )))
+  ;; (require 'switch-buffer-functions)
+  ;; (add-hook 'switch-buffer-functions
+  ;;           (lambda (prev curr)
+  ;;             ;; Only add the project to treemacs if we are in buffers that are associated to a file
+  ;;             ;; (treemacs-display-current-project-exclusively)
+  ;;             (when (and (buffer-file-name curr))
+  ;;               ;; (treemacs-display-current-project-exclusively)
+  ;;               ;; The following code was copied from (treemacs-display-current-project-exclusively) but I removed the calls to treemacs-select-window as it
+  ;;               ;; is annoying if the active window switches whenever we switch a buffer
+  ;;               (treemacs-block
+  ;;                (treemacs-unless-let (root (treemacs--find-current-user-project))
+  ;;                    (treemacs-error-return-if (null root)
+  ;;                      "Not in a project.")
+  ;;                  (let* ((path (treemacs--canonical-path root))
+  ;;                         (name (treemacs--filename path)))
+  ;;                    (unless (treemacs-current-workspace)
+  ;;                      (treemacs--find-workspace))
+  ;;                    (if (treemacs-workspace->is-empty?)
+  ;;                        (progn
+  ;;                          (treemacs-do-add-project-to-workspace path name)
+  ;;                          ;; (treemacs-select-window)
+  ;;                          (treemacs-pulse-on-success))
+  ;;                      ;; (treemacs-select-window)
+  ;;                      (if (treemacs-is-path path :in-workspace)
+  ;;                          (treemacs-goto-file-node path)
+  ;;                        (treemacs-add-project-to-workspace path name))))))
+  ;;               )))
+
+  ;; Enable CUA mode (copy paste with common shortcuts)
+  (cua-mode)
+
+  ;; Map Ctrl-s to safe-buffer
+  (global-unset-key (kbd "C-s"))
+  (global-set-key (kbd "C-s") 'save-buffer)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -546,8 +627,9 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (tabbar helm-gtags ggtags switch-buffer-functions yasnippet-snippets unfill treemacs-magit smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim magit-svn magit-section magit-gitflow magit-popup lsp-ui lsp-treemacs lsp-origami origami htmlize helm-org-rifle helm-lsp lsp-mode markdown-mode dash-functional helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy flycheck-pos-tip pos-tip flycheck-hdl-questasim evil-org evil-magit magit git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-persp treemacs-icons-dired toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))))
+   '(multiple-cursors tabbar helm-gtags ggtags switch-buffer-functions yasnippet-snippets unfill treemacs-magit smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim magit-svn magit-section magit-gitflow magit-popup lsp-ui lsp-treemacs lsp-origami origami htmlize helm-org-rifle helm-lsp lsp-mode markdown-mode dash-functional helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy flycheck-pos-tip pos-tip flycheck-hdl-questasim evil-org evil-magit magit git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-persp treemacs-icons-dired toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
+ '(spacemacs-theme-custom-colors '((bg1 . "#333333")))
+ '(treemacs-show-hidden-files nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

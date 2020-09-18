@@ -1,0 +1,79 @@
+-*- buffer-read-only: t -*-
+* About Emacs
+  
+** Spacemacs
+*** Keybindings in Spacemacs
+    Spacemacs changes a couple of things in how keyboard shortcuts work. While the
+    default keybindings are still usable, many of the advanced features of
+    spacemacs are mapped to shortcuts using mnemonic (easy to memorize) keystrokes
+    that all start with ~M-m~ (Alt+M). E.g. to search for a file within the
+    current direcory you would type ~M-m s d~ (s earch, d irectory). Many related
+    commands are grouped together under the same initial keystrokes.
+*** Discovering Shortcuts
+    The menu that pops-up at the bottom of the window if you stop for a hearbeat
+    while entering a keysequence shows you the available command (in grey) or
+    subgroups of commands (in blue) that are available. Whenever you feel lost,
+    just type the global cancel shortcut ~C-g~ or hit the Esape key for a couple
+    of times.
+* About Shortcuts
+  Emacs in general is all about using the keyboard for everything you do. There
+  is a keyboard shortcut for allmost every thinkable task you might want to do.
+  Emacs uses notations like the following to describe a keyboard shortcut:
+
+  ~C-x l~
+
+  This reads, press the Ctrl key (that's what the capital 'C' stands for) keep
+  it pressed, indicated by the dash ('-') symbol, and press the letter 'x'.
+  Release all keys (the empty space character) and hit the letter 'l'.
+
+  Here is fictitious example. Of course, the most commonly used commands do not
+  require such long sequences of keystrokes to activate:
+
+  ~M-x C-, j J~
+
+  Here the capital letter 'M' in the beginning of the dash means, press the meta
+  key (Alt). The key sequence is thus as follows:
+  1. Press Alt and while pressing it, type a lowercase 'x'.
+  2. Relase the keys
+  3. Press Ctrl and while pressing it, enter the ',' character
+  4. Release all keys
+  5. Type the smallercase letter 'j'
+  6. Type the capital letter 'J' (thus pressing shift)
+
+  Here is a small table that indicates what the different abbreviations you
+  might encounter in tutorials and the documentation mean:
+  
+  | Abbrevation     | Key to press                                    |
+  |-----------------+-------------------------------------------------|
+  | RET             | Enter/Return key                                |
+  | SPC             | Space Key                                       |
+  | M-<something>   | Keep pressing Alt and type <something>          |
+  | C-<something>   | Keep pressing Ctrl and type <something>         |
+  | C-M-<something> | Keep pressing Alt and Ctrl and type <something> |
+  | <left>          | Arrow left key                                  |
+  | <right>         | Arrow right key                                 |
+  | <up>            | Arrow up key                                    |
+  | <down>          | Arrow down key                                  |
+  | <f1>            | Hit the F1 key                                  |
+  | <DEL>           | Backspace                                       |
+  | <next>          | Page down                                       |
+  | <prio>          | Page up                                         |
+
+* Newbie Mode
+  In newbie-mode (the default if you just started that config) among other
+  settings, some of the default emacs keybindings have been remap to be more in
+  line with traditional keyboard shortcuts.
+
+  Copy, paste, Undo and Save are mapped to the default keybindings most other
+  programs use (C-c, C-v, C-z, C-s).
+
+  While one might wonder why emacs simply doesn't use the same shortcuts by
+  default like many other programs do the answer to that is pretty simple: With
+  an age of almost 40 years, emacs simply predates all of those programs and the
+  shortcuts were kept as they were. Some of the emacs shortcuts are still the
+  default for interaction with terminal emulators (e.g. ~C-a~ moves to the
+  beginning of the typed commadn while ~C-r~ incrementally searches backward in
+  command history).
+
+  If you are commited to using emacs we strongly recommend you to disable the
+  above mentioned modifications and use the default version of the keybindings.
