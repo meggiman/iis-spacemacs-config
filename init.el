@@ -523,9 +523,6 @@ before packages are loaded."
   ;; Remap M-m s e to iedit-mode instead of evil-iedit-mode
   (spacemacs/set-leader-keys "se" 'iedit-mode)
 
-  ;; Enable toolbar
-  (menu-bar-mode)
-
   ;; Add some utility functions to the toolbar
   (require 'easymenu)
   (defun disable-newbie-mode ()
@@ -535,7 +532,8 @@ before packages are loaded."
         (progn (cua-mode -1)
                (global-unset-key (kbd "C-s"))
                (global-set-key (kbd "C-s") isearch-forward)
-               (menu-bar-mode -1))
+               (menu-bar-mode -1)
+               (tool-bar-mode -1))
       )
     )
 
@@ -545,6 +543,7 @@ emacs users to use the editor."
     (interactive)
     (cua-mode)
     (menu-bar-mode 1)
+    (tool-bar-mode 1)
 
     ;; Map Ctrl-s to safe-buffer
     (global-unset-key (kbd "C-s"))
@@ -557,18 +556,22 @@ emacs users to use the editor."
     (find-file-other-frame (concat dotspacemacs-directory "/docs/cheatsheet.org" ))
     )
 
-  (defun show-iis-emacs-intro-buffer ()
+  (defun show-iis-emacs-quickstart-buffer ()
     "Show the emacs introduction for IIS students in a new buffer."
     (interactive)
     (find-file (concat dotspacemacs-directory "/docs/intro.org"))
     )
 
   (easy-menu-define vlsi1-menu global-map "IIS ETH Specific commands"
-		'("IIS Student"
-      ["Show Emacs Intro for IIS Students" show-iis-emacs-intro-buffer]
+		'("IIS Students Menu"
+      ["Show Emacs Quickstart Guide for IIS Students" show-iis-emacs-quickstart-buffer]
       ["Show Cheatsheet in new Window" show-cheatsheet-buffer]
 			["Disable newbie-mode"  disable-newbie-mode t]
 			))
+
+  ;; Activate the newbie settings by default.
+  ;; Remove this line if you no longer want to use those settings.
+  (enable-newbie-mode)
 
 
 
@@ -627,13 +630,14 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(multiple-cursors tabbar helm-gtags ggtags switch-buffer-functions yasnippet-snippets unfill treemacs-magit smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim magit-svn magit-section magit-gitflow magit-popup lsp-ui lsp-treemacs lsp-origami origami htmlize helm-org-rifle helm-lsp lsp-mode markdown-mode dash-functional helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy flycheck-pos-tip pos-tip flycheck-hdl-questasim evil-org evil-magit magit git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-persp treemacs-icons-dired toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
- '(spacemacs-theme-custom-colors '((bg1 . "#333333")))
+   (quote
+    (multiple-cursors tabbar helm-gtags ggtags switch-buffer-functions yasnippet-snippets unfill treemacs-magit smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim magit-svn magit-section magit-gitflow magit-popup lsp-ui lsp-treemacs lsp-origami origami htmlize helm-org-rifle helm-lsp lsp-mode markdown-mode dash-functional helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy flycheck-pos-tip pos-tip flycheck-hdl-questasim evil-org evil-magit magit git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-persp treemacs-icons-dired toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
+ '(spacemacs-theme-custom-colors (quote ((bg1 . "#333333"))))
  '(treemacs-show-hidden-files nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(tool-bar ((t (:background "#212026" :foreground "#b2b1aa" :box (:line-width 1 :style released-button))))))
 )
