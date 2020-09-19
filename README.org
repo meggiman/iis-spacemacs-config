@@ -1,17 +1,23 @@
-#+TITLE: Personal Spacemacs Configuration
-This repository contains my personal Spacemacs configuration for my daily work at ETH.
-* How to install
- 1. Install a recent version of emacs (25.1+). See
+#+TITLE: Spacemacs Configuration for IIS Students
+This repository contains a set of Spacemacs default settings to make it easier
+for absolute beginners to get started using Emacs for HDL development.
+* Installation
+ 1. Install a recent version of emacs (26.3+). See
     [[https://www.gnu.org/software/emacs/][https://www.gnu.org/software/emacs/]] for instructions to do so.
  2. Install the latest Spacemacs
     #+BEGIN_SRC shell
-    git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
-    git checkout develop
+    git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d -b develop
     #+END_SRC
+    At the time of writing this tutorial, development on the master branch of
+    Spacemacs is very much behind the current state of development to the degree
+    that the /develop/ branch is considered more stable than /master/.
  3. Install the spacemacs configurations from this repository
     #+BEGIN_SRC shell
     git clone https://github.com/meggiman/iis-spacemacs-config.git ~/.spacemacs.d
     #+END_SRC
- 4. Start emacs and enjoy the customizations (the first start after installation might take a considerable 
-    time as emacs has to download all the necessary packages)
+ 4. Start emacs for the first time and let it install all the necessary packages
+    (this might take a while). After it installed everything, restart emacs
+    (sometimes it needs a couple of restarts until everything is configured) and
+    enjoy emacs looking like an editor of the 21th century.
+    
 
