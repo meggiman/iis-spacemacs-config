@@ -85,8 +85,10 @@
   | *Close (kill) the buffer/file* (will ask if you want to safe if it was modified)     | ~C-x k~  |
 
 * Searching/Replacing (Spacemacs specific)
-  | Function                             | Shortcut  |
-  |--------------------------------------+-----------|
-  | *Search in current file (buffer)*    | ~M-m s s~ |
-  | *Search in all files of a directory* | ~M-m s f~ |
-  | *Search and replace*                 | ~M-%~     |
+  | Function                                                  | Shortcut  |
+  |-----------------------------------------------------------+-----------|
+  | *Search forward* (not in newbie mode)                     | ~C-s~     |
+  | *Search backward* (also works in most linux terminals)    | ~C-r~     |
+  | *Search in current file (buffer)* (spacemacs specific)    | ~M-m s s~ |
+  | *Search in all files of a directory* (spacemacs specific) | ~M-m s f~ |
+  | *Search and replace*                                      | ~M-%~     |

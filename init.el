@@ -525,15 +525,18 @@ before packages are loaded."
 
   ;; Add some utility functions to the toolbar
   (require 'easymenu)
+  (defvar newbie-mode nil "Indicates wether the customization for new Emacs users are enabled or disabled.")
   (defun disable-newbie-mode ()
     "Disable the newbie mode customizations."
     (interactive )
-    (if (y-or-n-p (format "Are you sure you want to disable newbie-mode? This will remove the toolbar!"))
+    (if (y-or-n-p (format "Are you sure you want to disable newbie-mode?"))
         (progn (cua-mode -1)
                (global-unset-key (kbd "C-s"))
                (global-set-key (kbd "C-s") isearch-forward)
-               (menu-bar-mode -1)
-               (tool-bar-mode -1))
+               ;; (menu-bar-mode -1)
+               ;; (tool-bar-mode -1)
+               (setq newbie-mode nil)
+               )
       )
     )
 
@@ -544,34 +547,51 @@ emacs users to use the editor."
     (cua-mode)
     (menu-bar-mode 1)
     (tool-bar-mode 1)
+    (tooltip-mode 1)
 
     ;; Map Ctrl-s to safe-buffer
     (global-unset-key (kbd "C-s"))
     (global-set-key (kbd "C-s") 'save-buffer)
+
+    (setq newbie-mode t)
     )
 
   (defun show-cheatsheet-buffer ()
     "Show the cheatsheet for keyboard shortcuts."
     (interactive)
-    (find-file-other-frame (concat dotspacemacs-directory "/docs/cheatsheet.org" ))
+    (find-file (concat dotspacemacs-directory "/docs/cheatsheet.org" ))
+    (with-current-buffer (find-file-noselect (concat dotspacemacs-directory "/docs/cheatsheet.org" ))
+      (read-only-mode 1)
+      (rename-buffer "*Emacs Cheatsheet for IIS Students*")
+      (display-buffer-pop-up-frame (current-buffer) nil)
+      )
     )
 
   (defun show-iis-emacs-quickstart-buffer ()
     "Show the emacs introduction for IIS students in a new buffer."
     (interactive)
-    (find-file (concat dotspacemacs-directory "/docs/intro.org"))
+    (find-file (concat dotspacemacs-directory "/docs/quickstart.org"))
     )
 
   (easy-menu-define vlsi1-menu global-map "IIS ETH Specific commands"
 		'("IIS Students Menu"
       ["Show Emacs Quickstart Guide for IIS Students" show-iis-emacs-quickstart-buffer]
       ["Show Cheatsheet in new Window" show-cheatsheet-buffer]
-			["Disable newbie-mode"  disable-newbie-mode t]
+			["Newbie-mode" (lambda () (interactive) (if newbie-mode (disable-newbie-mode) (enable-newbie-mode)))
+        ;; :label (if newbie-mode "Disable newbie-mode" "Enable newbie-mode")
+        :active t
+        :style toggle
+        :visible t
+        :selected newbie-mode
+        :help "Enable/Disable the customizations for Emacs beginners"
+        ]
 			))
 
   ;; Activate the newbie settings by default.
   ;; Remove this line if you no longer want to use those settings.
   (enable-newbie-mode)
+
+  (show-iis-emacs-quickstart-buffer)
 
 
 

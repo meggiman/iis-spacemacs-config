@@ -1,79 +1,448 @@
 -*- buffer-read-only: t -*-
-* About Emacs
+#+title: Emacs Quickstart Guide for the busy VLSI Student 
+
+* Content :TOC:noexport:
+- [[#why-not-an-ide][Why not an IDE?]]
+- [[#why-emacs][Why Emacs?]]
+- [[#whats-spacemacs-or-what-if-im-already-using-vim]["What's Spacemacs?" or "What if I'm already using VIM?"]]
+  - [[#keybindings-in-spacemacs][Keybindings in Spacemacs]]
+  - [[#vim-keybindings][VIM Keybindings]]
+- [[#how-to-get-started-with-spacemacs][How to get started with (Spac)emacs]]
+  - [[#about-shortcuts][About Shortcuts]]
+  - [[#newbie-mode][Newbie Mode]]
+  - [[#the-basics][The basics]]
+  - [[#interactive-emacs-tutorial][Interactive Emacs Tutorial]]
+- [[#system-verilog-support][System Verilog Support]]
+  - [[#automatic-syntax-checking][Automatic Syntax Checking]]
+  - [[#jumping-to-submodule-definition][Jumping to Submodule Definition]]
+- [[#general-tipps-and-tricks][General Tipps and Tricks]]
+  - [[#quick-navigation-with-the-cursor][Quick navigation with the cursor]]
+  - [[#searching-the-current-document][Searching the Current Document]]
+  - [[#searching-and-batch-editing-many-files][Searching and batch editing many files]]
+    - [[#limiting-the-search-to-certain-filetypes][Limiting the search to certain filetypes]]
+    - [[#searching-ignored-hidden-and-binary-files][Searching ignored, hidden and binary files]]
+  - [[#multiple-cursors-editing-multiple-lines-at-once][Multiple Cursors (Editing multiple lines at once)]]
+  - [[#keyboard-macros-or-how-to-edit-many-files-at-once][Keyboard Macros (or how to edit many files at once)]]
+  - [[#magit-a-powerfull-visual-git-interface-within-emacs][Magit (a powerfull visual git interface within emacs)]]
+- [[#faqs][FAQs]]
+  - [[#i-started-some-weird-command-how-can-i-cancel-it][I started some weird command. How can I cancel it?]]
+  - [[#how-to-install-this-configuration-on-my-own-machine][How to install this configuration on my own machine?]]
+
+* Why not an IDE?
+  Nowadays, integrated development environments (IDEs) like *Eclipse*,
+  *IntelliJ* or *MS Visual Studio* are more and more replacing traditional text
+  editors when it comes to programming. So why do we even bother talking about
+  text editors?
+
+  In the context of HDL development the reasoning to go for a Texteditor is dead
+  simple: At the moment there is no IDE with good support for VHDL or
+  SystemVerilog. Simple as that. Emacs and other *advanced* text editors are the
+  closest to an IDE you will get for SystemVerilog.
+   
+  Furthermore, traditional text editors like Emacs or VIM provide a feature set
+  that goes well beyond simple text editing. While both of them might look
+  pretty dated in their default configuration (you are right now using a heavily
+  customized version of Emacs) they are extremely versatile and, if correctly
+  configured provide, provide all of the features one might expect from a modern
+  IDE like syntax highlighing/checking, code completion, version control
+  integration and much more with support for almost any programming language on
+  planet earth. Having gone through decades of development they both made text
+  manipulation as efficient as humanly possible. You would be surprised how much
+  efficiency you lose by constantly moving your hands back and forth between the
+  mouse and the keyboard. While IDEs also have shortcuts for the most basic
+  editing tasks they still require the usage of the mouse fairly often and lack
+  advanced text editing features like keyboard macros, multiple cursors or
+  multiple clipboard entries (so called kill rings). Traditional text editors on
+  the other hand are designed to be purely keyboard driven. With time the
+  keyboard shortcuts become muscle memory and looking over the shoulder of a
+  profficient Emacs or VIM user looks like black magic straight from a "hacker
+  scene" in hollywood movies.
+   
+  For general text manipulation like editing Linux configuration files, editing
+  shell scripts or inspecting the output of a logfile, the choice obviously
+  falls to a traditional text editor as well. As you will get to see in the
+  VLSI1 and VLSI2 exercises, especially ASIC developers have to deal with an
+  awfull lot of different tools, each using its own script and logfile format.
+  It is thus worth spending the time to become profficient with a general
+  purpose text editor even though they might have an intimidating learning
+  curve at the beginning.
+
+* Why Emacs?
+  Because the author of this quickstart guide uses it :-) Seriously I don't
+  want to go into the infamous [[https://en.wikipedia.org/wiki/Editor_war]["Editor War"]]. As long as you're using a proper
+  Texteditor (no, that doesn't include Notepad++, gedit or nano) it doesn't
+  matter that much.
+
+  However, Emacs has a couple of unique features that make it a very appealing
+  choice. Being almost completely written in Lisp (emacs lisp to be more
+  specific) it is extremely extensible. From listening to Spotify music to
+  controlling your Smarthome, there is a package for almost everything you might
+  and might not want to do with a text editor. You can modify pretty much
+  anything about the editor with just a couple lines of lisp code.
+
+  Another nice feature is Emacs' concept of Major and Minor modes that allows
+  editor support for mixed-language files (files that contain fragments of
+  different languages in the same file e.g. having Python Code and SQL code in
+  the same file).
+
+  With the integrated SSH client (Tramp) Emacs also allows to transparently edit
+  files on remote servers as if they were local files without going through the
+  hassle of constantly copying the files back and forth even though emacs also
+  works with almost zero restrictions in a terminal only environment without a
+  GUI (start emacs with ~emacs -nw~ to try it out).
+
+* "What's Spacemacs?" or "What if I'm already using VIM?"
+  Emacs with default settings looks like a very dated texteditor and many of the
+  cool IDE like features require lots of customization in the user config file.
+  Spacemacs is a community driven customization that makes Emacs look and feel
+  more like an IDE and a Texteditor of the 21th century.
+
+  It was designed to make full usage of Emacs' so called "evil-mode". Evil-mode
+  is an almost feature complete VIM emulator within Emacs. It combines the best
+  of both worlds VIM's modal style of text editing and Emacs boundless
+  extensibility. However, Spacemacs also allows to use emacs keybindings instead
+  of using evil-mode. Since VIMs modal style editing is quite hard to get used
+  to for beginners we configured spacemacs to use emacs keybindings by default.
+  If you are already a comfortable VIM user, just jump to the following
+  [[*VIM Keybindings][subsection]] to figure out how to turn on evil-mode.
+
+  To learn more about Spacemacs, visit their [[https://www.spacemacs.org/][website]] for more detailed
+  documentation about its features.
   
-** Spacemacs
-*** Keybindings in Spacemacs
-    Spacemacs changes a couple of things in how keyboard shortcuts work. While the
-    default keybindings are still usable, many of the advanced features of
-    spacemacs are mapped to shortcuts using mnemonic (easy to memorize) keystrokes
-    that all start with ~M-m~ (Alt+M). E.g. to search for a file within the
-    current direcory you would type ~M-m s d~ (s earch, d irectory). Many related
-    commands are grouped together under the same initial keystrokes.
-*** Discovering Shortcuts
-    The menu that pops-up at the bottom of the window if you stop for a hearbeat
-    while entering a keysequence shows you the available command (in grey) or
-    subgroups of commands (in blue) that are available. Whenever you feel lost,
-    just type the global cancel shortcut ~C-g~ or hit the Esape key for a couple
-    of times.
-* About Shortcuts
-  Emacs in general is all about using the keyboard for everything you do. There
-  is a keyboard shortcut for allmost every thinkable task you might want to do.
-  Emacs uses notations like the following to describe a keyboard shortcut:
+** Keybindings in Spacemacs
+   Spacemacs changes a couple of things in how keyboard shortcuts work. While
+   the default keybindings of vanilla emacs are still usable, many of the
+   advanced features of spacemacs are mapped to shortcuts using mnemonic (easy
+   to memorize) keystrokes that all start with ~M-m~ (Alt+M) or ~SPC~ (thus the
+   name Spacemacs) if you are using [[*VIM Keybindings][vim keybindings]]. E.g. to search for a file
+   within the current direcory you would type ~M-m s d~ (s earch, d irectory).
+   Many related commands are grouped together under the same initial keystrokes.
+   Many of the basics and also advanced features of Spacemacs can be explored by
+   hitting the above mentioned "leader key" (Alt+M) and waiting for a heartbeat
+   before entering the next letter of a keyboard shortcut. A menu will pop-up at
+   the bottom of the screen that shows the available commands (in grey) and
+   groups of related command (in blue) that can be executed by pressing the
+   corespondingly displayed letter. Whenever you feel lost, press ~C-g~ (Ctrl-g)
+   to cancel and bring you back to the main menu.
+** VIM Keybindings
+   Spacemacs was actually designed to bring the best of both, VIM and Emacs
+   together. By default Spacemacs uses the so called /evil-mode/ which is
+   probably the most feature complete reimplementation of VIM within Emacs. This allows
+   to profit from Emacs extensibility and advanced featureset while still using
+   almost any VIM feature you are already used to.
 
-  ~C-x l~
+   If you want to activate this mode, open the spacemacs configuration file and
+   change [[file:~/.spacemacs.d/init.el::dotspacemacs-editing-style 'emacs][this line]] (just click it) as follows and restart emacs.
 
-  This reads, press the Ctrl key (that's what the capital 'C' stands for) keep
-  it pressed, indicated by the dash ('-') symbol, and press the letter 'x'.
-  Release all keys (the empty space character) and hit the letter 'l'.
+   #+BEGIN_SRC elisp
+     dotspacemacs-editing-style 'vim
+   #+END_SRC
 
-  Here is fictitious example. Of course, the most commonly used commands do not
-  require such long sequences of keystrokes to activate:
+   There even is an interactive tutorial that teaches you the basics of the vim
+   keybindings. You can start it by clicking the [[elisp:(evil-tutor-start)][link]] or executing the
+   'evli-tutor-start' command (type ~M-x~ to execute any command).
+   
+* How to get started with (Spac)emacs
+** About Shortcuts
+   Emacs in general is all about using the keyboard for everything you do. From
+   deleting a single line to batch refactoring a complete folder structure
+   chances are high that the command is already mapped to a keyboard shortcut.
 
-  ~M-x C-, j J~
+   Before we get started with the most important shortcuts we have to introduce
+   the Syntax on how those shortcuts are commonly expressed in Emacs Tutorials.
+   
+   Emacs uses notations like the following to describe a keyboard shortcut:
 
-  Here the capital letter 'M' in the beginning of the dash means, press the meta
-  key (Alt). The key sequence is thus as follows:
-  1. Press Alt and while pressing it, type a lowercase 'x'.
-  2. Relase the keys
-  3. Press Ctrl and while pressing it, enter the ',' character
-  4. Release all keys
-  5. Type the smallercase letter 'j'
-  6. Type the capital letter 'J' (thus pressing shift)
+   ~C-c l~
 
-  Here is a small table that indicates what the different abbreviations you
-  might encounter in tutorials and the documentation mean:
+   This reads, press the Ctrl key (that's what the capital 'C' stands for) *keep
+   it pressed*, indicated by the dash ('-') symbol, while pressing the letter
+   'c' (Like the copy command in MS Windows). Release all keys (the empty space
+   character) and then hit the letter 'l' without pressing anything else.
+
+   Here is fictitious example. Of course, the most commonly used commands do not
+   require such long sequences of keystrokes to activate:
+
+   ~M-x C-, j J~
+
+   Here the capital letter 'M' in the beginning of the dash means, press the meta
+   key (aka. Alt key). The key sequence is thus executed as follows:
+   1. Press Alt and while pressing it, type a lowercase 'x'.
+   2. Relase the keys
+   3. Press Ctrl and while pressing it, enter the ',' character
+   4. Release all keys
+   5. Type the smallercase letter 'j'
+   6. Type the capital letter 'J' (thus pressing shift)
+
+   Here is a small table that indicates what the different abbreviations you
+   might encounter in tutorials and the documentation mean:
   
-  | Abbrevation     | Key to press                                    |
-  |-----------------+-------------------------------------------------|
-  | RET             | Enter/Return key                                |
-  | SPC             | Space Key                                       |
-  | M-<something>   | Keep pressing Alt and type <something>          |
-  | C-<something>   | Keep pressing Ctrl and type <something>         |
-  | C-M-<something> | Keep pressing Alt and Ctrl and type <something> |
-  | <left>          | Arrow left key                                  |
-  | <right>         | Arrow right key                                 |
-  | <up>            | Arrow up key                                    |
-  | <down>          | Arrow down key                                  |
-  | <f1>            | Hit the F1 key                                  |
-  | <DEL>           | Backspace                                       |
-  | <next>          | Page down                                       |
-  | <prio>          | Page up                                         |
+   | Abbrevation     | Key to press                                    |
+   |-----------------+-------------------------------------------------|
+   | RET             | Enter/Return key                                |
+   | SPC             | Space Key                                       |
+   | M-<something>   | Keep pressing Alt and type <something>          |
+   | C-<something>   | Keep pressing Ctrl and type <something>         |
+   | C-M-<something> | Keep pressing Alt and Ctrl and type <something> |
+   | <left>          | Arrow left key                                  |
+   | <right>         | Arrow right key                                 |
+   | <up>            | Arrow up key                                    |
+   | <down>          | Arrow down key                                  |
+   | <f1>            | Hit the F1 key                                  |
+   | <DEL>           | Backspace                                       |
+   | <next>          | Page down                                       |
+   | <prio>          | Page up                                         |
 
-* Newbie Mode
-  In newbie-mode (the default if you just started that config) among other
-  settings, some of the default emacs keybindings have been remap to be more in
-  line with traditional keyboard shortcuts.
+** Newbie Mode
+   In newbie-mode (the default if you just started that config) among other
+   settings, some of the default emacs keybindings have been remap to be more in
+   line with traditional keyboard shortcuts.
 
-  Copy, paste, Undo and Save are mapped to the default keybindings most other
-  programs use (C-c, C-v, C-z, C-s).
+   Copy, paste, Undo and Save are mapped to the default keybindings most other
+   programs use (C-c, C-v, C-z, C-s).
 
-  While one might wonder why emacs simply doesn't use the same shortcuts by
-  default like many other programs do the answer to that is pretty simple: With
-  an age of almost 40 years, emacs simply predates all of those programs and the
-  shortcuts were kept as they were. Some of the emacs shortcuts are still the
-  default for interaction with terminal emulators (e.g. ~C-a~ moves to the
-  beginning of the typed commadn while ~C-r~ incrementally searches backward in
-  command history).
+   While one might wonder why emacs simply doesn't use the same shortcuts by
+   default like many other programs do the answer to that is pretty simple: With
+   an age of almost 40 years, emacs simply predates all of those programs and the
+   shortcuts were kept as they were. Some of the emacs shortcuts are still the
+   default for interaction with terminal emulators (e.g. ~C-a~ moves to the
+   beginning of the typed commadn while ~C-r~ incrementally searches backward in
+   command history).
 
-  If you are commited to using emacs we strongly recommend you to disable the
-  above mentioned modifications and use the default version of the keybindings.
+   If you are commited to using emacs we strongly recommend you to disable the
+   above mentioned modifications and use the default version of the keybindings.
+
+   To do so, go to the spacemacs configuration file and remove or comment (;)
+   [[file:~/.spacemacs.d/init.el::;; Remove this line if you no longer want to use those settings.][this line]].
+
+** The basics
+   The following [[http://www.jesshamrick.com/2012/09/10/absolute-beginners-guide-to-emacs/][link]] provides an excellent quickstart tutorial on how to use
+   emacs. The screenshots might look a little bit different to what you see
+   right now due to the customizations of Spacemacs. Also, if [[*Newbie Mode][Newbie Mode]] is
+   enabled, some of the shortcuts are remapped but the basics stay the same.
+** Interactive Emacs Tutorial
+   Emacs has a built-in interactive tutorial that teaches you the most important
+   basics about the editor. However, the above mentioned settings for newbies
+   (especially the remapping of ~C-v~) interferes quite a bit with the way how
+   the tutorial works. We reccomend you to [[elisp:(disable-newbie-mode)][disable these customizations]]  before
+   you [[elisp:(emacs-tutorial "English" nil)][start the tutorial]].
+* System Verilog Support
+  While there are a couple of editors that support syntax highlighting for
+  SystemVerilog source code, at least to the authors knowledge, there is no free
+  software solution that provides automatic Syntax Checking and "Jump to
+  definition" support we are used to with normal IDEs. The lack of it is partly
+  to blame on the language itself which is notoriously convoluted (some argue
+  its even worse than C++) to the degree that each EDA software vendor only
+  supports its own (sometimes even undocumented) subset of the language
+  specification.
+
+  This customization of Spacemacs is an effort of the author to make the lifes
+  for HDL developer a tiny bit easier even though it doesn't implement a full
+  featured IDE environment.
+** Automatic Syntax Checking
+   Flycheck is a general purpose syntax checker framework that provides an
+   interface to easily create new syntax checkers from the error output of some
+   other program. The [[https://github.com/meggiman/flycheck-hdl-questasim][flycheck-hdl-questasim]] checker is a very crude
+   implementation that parses the log output of Mentor Graphics Questasim and
+   accordingly anotates the buffer with syntax error markers with associated
+   error messages. This only works, if Questasim (vlog, and vcom) executables
+   are installed in the PATH.
+
+   By default, the checker will try to infere the root directory of the HDL
+   project by searching for some toplevel .git directory marking the root of a
+   project. To do so it uses a package called projectile that is integrated into
+   spacemacs for project management. Syntax errors are marked in red, while
+   semantic errors (discovered at elaboration time) are marked in orange.
+
+   Within this root directory, the checker will create a hidden directory
+   (.flycheck-work) that contains the build output of Questasim. In the very
+   beginning the checker might still complain about unknown submodules. This is
+   due to the fact that by default the checker will only parse files when they
+   are opened. For larger projects it would of course be very cumbersome having
+   to open each individual files just for the checker to realize the existence
+   of each submodule. *You can force parsing* of every SystemVerilog file in a
+   directory (recursively) by entering the following shortcut: ~M-m s a~ or
+   executing the command (~M-x~) 'flycheck-hdl-questasim-analyze-workdir' (only
+   available within a SystemVerilog file).
+
+   Of course the checkers rudimentary architecture doesn't make it very smart
+   when it comes to parsing the right subset of the sourcefile. For more complex
+   projects (e.g. PULP projects) the right include and compilation order might
+   not be as simple as just parsing every file in a directory. For these
+   occasions you might have to life with the fact that the checker shows some
+   false positives.
+** Jumping to Submodule Definition
+   One of the most commonly used features when navigating a larger HDL project
+   is the ability to jump to the definition of a submodule. This customization
+   provides leverages GNU Globals, a source code tagging software to do the
+   heavy lifting. In the VLSI1 setup, everything is already setup to use the
+   feature, however if you want to use it on your own computer you have to
+   install [[https://github.com/universal-ctags/ctags][universal ctags]] (thats not the normal CTAGS you get from your default
+   software repository, the default exuberant ctags package doesn't support
+   SystemVerilog) and install [[https://www.gnu.org/software/global/][GNU Global]] with support for the universal CTAGS
+   plug-in parser. The following [[https://develop.spacemacs.org/layers/+tags/gtags/README.html][webpage]] explains the setup in detail.
+
+   Once everything is installed you can use the GTAGS extension by first
+   generating an index of all submodules within your project. To do so, press
+   ~M-m m g C~ (capital 'C'!, within a SystemVerilog file) and choose the root
+   directory of your project. GTAG will then automatically traverse every file
+   within your project and generate an index of all recognized symbols. After
+   generating the index you can then jump to submodule definitions by placing
+   your cursor on top of a module name and pressing ~M-.~. To jump pack to the
+   previous submodule press ~M-m m g p~.
+* General Tipps and Tricks
+** Quick navigation with the cursor
+   Spacemacs comes with pre-installed package called Avy that greatly
+   accelerates cursor navigation. Two functions of the package are especially
+   usefull.
+
+   The first one, 'evil-avy-goto-char-timer' lets you jump to arbitrary
+   locations within any visible emacs buffer. It is invoked with the keyboard
+   shortcut ~M-m j j~. After invoking it you have a look at location you want to
+   jump and enter the first couple of characters that follows the intended
+   cursors location. E.g. if you want to jump with your cursor to *this* word
+   you would enter ~t h i~. After waiting for a heartbeat, Avy will highlight
+   every occurence of 'thi' within all buffers with color coded characters. You
+   tell avy where you want to jump to by entering the colored characters that
+   show up at the intended target location. The characters form a decision tree
+   so the more character of the target location you type in the beginning, the
+   less colored characters you have to type to jump to the target location.
+
+   This is a little bit hard to explain in words. You just have to try it out.
+   Once it becomes muscle memory, moving the cursor to the target location
+   becomes blazingly fast.
+
+   There is a second even simpler version of the avy-jump function that is also
+   quite handy: With ~M-m j l~ or 'evil-avy-goto-line' you can do the same
+   procedure but jumping to the beginning of a target line instead of a specific
+   word which is a few key-strokes faster than the general purpose jump
+   introduced above. Again, once these two shortcuts become second nature, they
+   will boost your text manipulation productivity quite a lot.
+   
+** Searching the Current Document
+   While 'isearch-forward' (~C-s~ in non newbie-mode) works pretty well for
+   basic searching within a document, spacemacs comes with a much more powerfull
+   version of it that uses fuzzy matching and provides you with a live preview
+   of all the matching locations within your document.
+
+   You can invoke the command ('helm-swoop) with ~M-m s s~. The minibuffer at
+   the bottom of the screen will expand and you can start typing what you're
+   searching for. As soon as some results popup, you can use the normal
+   navigation keys (~C-n~ and ~C-p~) to navigate and life preview the results.
+** Searching and batch editing many files
+   Complex projects often require you to look for a specific symbol in an entire
+   code base instead of just a single file. While you could definetly use the
+   Linux CLI tool 'grep' (in recursive mode) to do it, this solution becomes way
+   to slow once your dealing with more than just a one or two thousand files.
+   Emacs integrates an interface for 'ripgrep' an extremely fast rust-based file
+   search engine with support for Regex searches.
+
+   To recursively search the content of each file within a directory with the
+   familiar fuzzy matching search tool helm (thats the name of the package that
+   shows you the nice fuzzy matching previews at the bottom of the screen
+   whenever you are opening a file or executing a command by name (~M-x~)),
+   press ~M-m s f~. The command will ask you for the root directory you want to
+   recursively search. Once you've chosen it you can start searching by typing
+   the search term using regular expressions (or just type what you're looking
+   for if you are not familiar with Regex).
+
+*** Limiting the search to certain filetypes
+    Ripgrep (rg) in short allows you to limit the filetypes it searches in by
+    passing flags to your search term. E.g. if you enter 'adder_unit -tverilog',
+    ripgrep will only show you results in verilog files (files ending with *.sv or
+    *.v etc.). Ripgrep supports quite a number of file type shortnames:
+    | Argument to enter | Filetypes                                                                  |
+    | '-tmake'          | Makefiles (files with name 'Makefile', 'makefile', '*.mk' etc.             |
+    | '-ttcl'           | For tcl files used in various EDA tools like Synopsys, Vivado or Questasim |
+    | '-tvhdl'          | For vhdl files                                                             |
+    | '-tsh'            | For all sorts of shell script files (*.sh, *.bash, *.csh, *.zsh etc.)      |
+    | '-tpy'            | For python files                                                           |
+
+    You can get a list of available filetypes by entering:
+    #+BEGIN_SRC bash
+      rg --type-list
+    #+END_SRC
+
+    If your desired filetype is not available you can derictly restrict the
+    search to files matching a certain pattern with the '-g' argument e.g.:
+    =riscv-cpu -g*.ipslist= will only search for the term 'riscv-cpu' in files
+    ending with '.ipslist'.
+
+*** Searching ignored, hidden and binary files
+    By default, ripgrep will not search in files that are ignored by a
+    '.gitignore' file, hidden files (filename starting with a '.' in Linux) and
+    binary files. You can override this behavior by appending the '-u' flag to
+    your search term.
+    - Passing =-u= will search in files ignored by a '.gitignore'
+    - Passing =-uu= will additionally search in hidden files
+    - Passing =-uuu= will additionaly search in binary files
+      
+** Multiple Cursors (Editing multiple lines at once)
+   With the 'multiple-cursors' package, emacs provides the possibility to edit
+   with mutiple cursors in parallel. This comes in handy if you have to batch
+   edit text aroudn a couple lines of code and are to lazy to use a [[*Keyboard Macros (or how to edit many files at once)][keyboard
+   shortcut]] to solve the task.
+
+   You can use multiple cursors by either marking consecutive lines you want to
+   edit or by marking a search in fron of each occurence of the word you want a
+   cursor to be instantiated.
+
+   For the first version, switch to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Rectangles.html][rectancular selection]] mode (~C-x SPC~) and
+   mark each line on which you want a cursor. Then hit ~M-m s m r~ and you will
+   see a cursor appearing on each of the marked line. You can now batch edit in
+   parallel on all of those lines. Once your done editing, hit the return key
+   (~RET~) to exit multiple cursor mode. If you want to insert a newline on
+   every cursor (pressing RET doesn't work as it exits multiple cursor mode),
+   hit ~C-j~.
+
+   The second version works as follows, you mark a word in front of each
+   occurence you want a cursor to appear. The you type ~M-m s m m~ and press the
+   <DOWN> key to mark the next occurence or <RIGHT> key to skip an occurence of
+   the marked word until you have as many cursors as you want. Then you start
+   editing and once you're done exit multiple cursor mode with ~RET~.
+** Keyboard Macros (or how to edit many files at once)
+   Keyboard macros are an extremely powerfull tool when it comes to applying the
+   same kind of transformation over and over again. In very simple terms, a
+   keyboard macro records every keystroke you make including the execution of
+   any command until you stop the macro recording. You can then reapply the same
+   sequence of text edits and commands over and over again. If you learn how to
+   properly use this feature it becomes an extremely powerful tool for general
+   purpose text transformation. Here are some good resources that teach you how
+   to use keyboard macros efficiently:
+   - [[https://www.emacswiki.org/emacs/KeyboardMacrosTricks]]
+   - [[https://www.youtube.com/watch?v=JfZ9fCHzkJw&t=41s]]
+** Magit (a powerfull visual git interface within emacs)
+   Magit is one of the most efficient interfaces to git and is directly
+   integrated within emacs. It makes merging, rebasing, git blaming (does
+   exactly what the name implies; figuring out who is to blame for a certain
+   line of messy code) and git history viewing very easy. Probably the most
+   convenient and invaluable feature of magit is the ease with which it is
+   possible to partially stage changes within the same file. This makes it
+   possible to commit only a subset of the changes within the same file to
+   properly create commits of atomic changes. For me, that regurlarly forgets to
+   commit changes this is extremely convenient as it allows to properly divide
+   changes into atomic commits after the fact.
+
+   In any buffer part that is part of a git project you can open the git status
+   view with ~M-m g s~. This will open the magit status view that shows you the
+   current status of your git project. Press ~h~ to show a help window at the
+   bottom of the screen with all the available options and commands that magit
+   provides. You can e.g. press ~l a~ to show the git log of all branches within
+   your repository or press ~m~ to start a merge.
+
+   In order to create a commit, navigate to the 'unstaged changes' and
+   'untracked files' area and press ~TAB~ to show the changes you performed
+   since your last commit. You can now press ~s~ (for stage) to stage a complete
+   file or, if you move your cursor to a specific change within the file, only
+   partial changes within a file. Once everything is staged that you want to
+   commit, press ~c c~ to create a new commit. You will be asked for a commit
+   message and you can finish the commit once you've entered the message with
+   ~C-c C-c~.
+* FAQs
+** I started some weird command. How can I cancel it?
+   Press ~C-g~ or ~ESC ESC ESC~ (yes 3 times in a row) to cancel anything within emacs.
+** How to install this configuration on my own machine?
+   Visit [[https://github.com/meggiman/iis-spacemacs-config]] for instructions on
+   how to install the customization on your own computer. However, keep in mind
+   that the SystemVerilog Syntax Checker requires Questasim to be installed on
+   your computer which might not be the case on your personal machine.
