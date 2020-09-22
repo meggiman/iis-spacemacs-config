@@ -617,23 +617,25 @@ emacs users to use the editor."
                               )))
        "Emacs")
       ((derived-mode-p 'dired-mode)
-       "Dired")
+       "Directories")
       ((memq major-mode '(helpful-mode
                           help-mode))
        "Help")
-      ((memq major-mode '(org-mode
-                          org-agenda-clockreport-mode
-                          org-src-mode
-                          org-agenda-mode
-                          org-beamer-mode
-                          org-indent-mode
-                          org-bullets-mode
-                          org-cdlatex-mode
-                          org-agenda-log-mode
-                          diary-mode))
-       "OrgMode")
-	 (t
-	  (centaur-tabs-get-group-name (current-buffer))))))
+      ;; ((memq major-mode '(org-mode
+      ;;                     org-agenda-clockreport-mode
+      ;;                     org-src-mode
+      ;;                     org-agenda-mode
+      ;;                     org-beamer-mode
+      ;;                     org-indent-mode
+      ;;                     org-bullets-mode
+      ;;                     org-cdlatex-mode
+      ;;                     org-agenda-log-mode
+      ;;                     diary-mode))
+      ;;  "OrgMode")
+      (t
+       "Files"
+       ;; (centaur-tabs-get-group-name (current-buffer))
+       ))))
 
 
 
