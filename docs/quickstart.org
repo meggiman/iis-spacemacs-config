@@ -1,4 +1,6 @@
 -*- buffer-read-only: t -*-
+#+STARTUP: showeverything 
+
 #+title: Emacs Quickstart Guide for the busy VLSI Student 
 
 * Content :TOC:noexport:
