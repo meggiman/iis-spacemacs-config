@@ -101,7 +101,7 @@ It should only modify the values of Spacemacs settings."
    ;; to compile Emacs 27 from source following the instructions in file
    ;; EXPERIMENTAL.org at to root of the git repository.
    ;; (default nil)
-   dotspacemacs-enable-emacs-pdumper nil
+   dotspacemacs-enable-emacs-pdumper t
 
    ;; Name of executable file pointing to emacs 27+. This executable must be
    ;; in your PATH.
@@ -593,7 +593,11 @@ emacs users to use the editor."
 
   (show-iis-emacs-quickstart-buffer)
 
-  ;;Configure Centaur Tabs grouping
+  ;;Configure Centaur Tabs
+
+  (setq centaur-tabs-show-navigation-buttons t)
+  (setq centaur-tabs-set-icons t)
+  ;; Tab grouping
   (defun centaur-tabs-buffer-groups ()
     "`centaur-tabs-buffer-groups' control buffers' group rules.
 
