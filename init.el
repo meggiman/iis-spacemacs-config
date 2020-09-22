@@ -677,6 +677,10 @@ emacs users to use the editor."
   ;; Map Ctrl-s to safe-buffer
   (global-unset-key (kbd "C-s"))
   (global-set-key (kbd "C-s") 'save-buffer)
+
+
+  ;; Enable transient-mark-mode (fixes issue that marked region is not visible when loading pdumped emacs)
+  (transient-mark-mode 1)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
