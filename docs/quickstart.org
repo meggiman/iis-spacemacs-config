@@ -27,6 +27,7 @@
   - [[#keyboard-macros-or-how-to-edit-many-files-at-once][Keyboard Macros (or how to edit many files at once)]]
   - [[#magit-a-powerfull-visual-git-interface-within-emacs][Magit (a powerfull visual git interface within emacs)]]
 - [[#faqs][FAQs]]
+  - [[#how-do-i-close-a-split-screen-window][How do I close a Split Screen Window?]]
   - [[#i-started-some-weird-command-how-can-i-cancel-it][I started some weird command. How can I cancel it?]]
   - [[#how-to-install-this-configuration-on-my-own-machine][How to install this configuration on my own machine?]]
 
@@ -441,6 +442,12 @@
    message and you can finish the commit once you've entered the message with
    ~C-c C-c~.
 * FAQs
+** How do I close a Split Screen Window?
+   You can close a split screen window either with ~C-x 0~ or by *right
+   clicking* the little blue number in the lower left corner in the status line
+   of the respective window. Alternatively you can maximize a split screen
+   window by using a *middle mouse click* instead. This will close the other
+   windows but your buffers (files) remain open in the background.
 ** I started some weird command. How can I cancel it?
    Press ~C-g~ or ~ESC ESC ESC~ (yes 3 times in a row) to cancel anything within emacs.
 ** How to install this configuration on my own machine?
