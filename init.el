@@ -559,11 +559,10 @@ emacs users to use the editor."
   (defun show-cheatsheet-buffer ()
     "Show the cheatsheet for keyboard shortcuts."
     (interactive)
-    (find-file (concat dotspacemacs-directory "/docs/cheatsheet.org" ))
     (with-current-buffer (find-file-noselect (concat dotspacemacs-directory "/docs/cheatsheet.org" ))
       (read-only-mode 1)
-      (rename-buffer "*Emacs Cheatsheet for IIS Students*")
       (display-buffer-pop-up-frame (current-buffer) nil)
+      (spacemacs/prettify-org-buffer)
       )
     )
 
@@ -571,6 +570,7 @@ emacs users to use the editor."
     "Show the emacs introduction for IIS students in a new buffer."
     (interactive)
     (find-file (concat dotspacemacs-directory "/docs/quickstart.org"))
+    (spacemacs/prettify-org-buffer)
     )
 
   (easy-menu-define vlsi1-menu global-map "IIS ETH Specific commands"
@@ -672,14 +672,6 @@ emacs users to use the editor."
   ;;                          (treemacs-goto-file-node path)
   ;;                        (treemacs-add-project-to-workspace path name))))))
   ;;               )))
-
-  ;; Enable CUA mode (copy paste with common shortcuts)
-  (cua-mode)
-
-  ;; Map Ctrl-s to safe-buffer
-  (global-unset-key (kbd "C-s"))
-  (global-set-key (kbd "C-s") 'save-buffer)
-
 
   ;; Enable transient-mark-mode (fixes issue that marked region is not visible when loading pdumped emacs)
   (transient-mark-mode 1)
