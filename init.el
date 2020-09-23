@@ -573,10 +573,25 @@ emacs users to use the editor."
     (spacemacs/prettify-org-buffer)
     )
 
+  (defun update-iis-student-config ()
+    "Executes git pull on .spacemacs.d directory to update the configuration to the newest version."
+    (interactive)
+    (let ((default-directory "~/.spacemacs.d")
+          (output-buffer "*IIS Config Update*"))
+      (if (get-buffer output-buffer) (kill-buffer output-buffer))
+      (if (eq 0 (call-process "git" nil output-buffer nil "pull"))
+          (message-box "The configuration was udpated. Please Restart Emacs")
+        (message-box "Could not update the configuration. Check the error log.")
+        (switch-to-buffer output-buffer)
+        )
+      )
+    )
+
   (easy-menu-define vlsi1-menu global-map "IIS ETH Specific commands"
 		'("IIS Students Menu"
       ["Show Emacs Quickstart Guide for IIS Students" show-iis-emacs-quickstart-buffer]
       ["Show Cheatsheet in new Window" show-cheatsheet-buffer]
+      ["Check for Config Update" update-iis-student-config]
 			["Newbie-mode" (lambda () (interactive) (if newbie-mode (disable-newbie-mode) (enable-newbie-mode)))
         ;; :label (if newbie-mode "Disable newbie-mode" "Enable newbie-mode")
         :active t
