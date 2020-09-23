@@ -532,7 +532,7 @@ before packages are loaded."
     (if (y-or-n-p (format "Are you sure you want to disable newbie-mode?"))
         (progn (cua-mode -1)
                (global-unset-key (kbd "C-s"))
-               (global-set-key (kbd "C-s") isearch-forward)
+               (global-set-key (kbd "C-s") 'isearch-forward)
                ;; (menu-bar-mode -1)
                ;; (tool-bar-mode -1)
                (setq newbie-mode nil)
