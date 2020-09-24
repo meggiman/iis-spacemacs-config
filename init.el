@@ -181,7 +181,7 @@ It should only modify the values of Spacemacs settings."
    ;; to compile Emacs 27 from source following the instructions in file
    ;; EXPERIMENTAL.org at to root of the git repository.
    ;; (default nil)
-   dotspacemacs-enable-emacs-pdumper nil
+   dotspacemacs-enable-emacs-pdumper t
 
    ;; Name of executable file pointing to emacs 27+. This executable must be
    ;; in your PATH.
@@ -192,9 +192,9 @@ It should only modify the values of Spacemacs settings."
    ;; portable dumper in the cache directory under dumps sub-directory.
    ;; To load it when starting Emacs add the parameter `--dump-file'
    ;; when invoking Emacs 27.1 executable on the command line, for instance:
-   ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
-   ;; (default spacemacs.pdmp)
-   dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
+   ;;   ./emacs --dump-file=$HOME/.emacs.d/.cache/dumps/spacemacs-27.1.pdmp
+   ;; (default (format "spacemacs-%s.pdmp" emacs-version))
+   dotspacemacs-emacs-dumper-dump-file (format "spacemacs-%s.pdmp" emacs-version)
 
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
@@ -321,8 +321,10 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-major-mode-leader-key ","
 
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m")
-   dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+   ;; (default "C-M-m" for terminal mode, "<M-return>" for GUI mode).
+   ;; Thus M-RET should work as leader key in both GUI and terminal modes.
+   ;; C-M-m also should work in terminal mode, but not in GUI mode.
+   dotspacemacs-major-mode-emacs-leader-key (if window-system "<M-return>" "C-M-m")
 
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
@@ -331,21 +333,6 @@ It should only modify the values of Spacemacs settings."
    ;; In the terminal, these pairs are generally indistinguishable, so this only
    ;; works in the GUI. (default nil)
    dotspacemacs-distinguish-gui-tab nil
-
-   ;; If non-nil `Y' is remapped to `y$' in Evil states. (default nil)
-   dotspacemacs-remap-Y-to-y$ nil
-
-   ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
-   ;; there. (default t)
-   dotspacemacs-retain-visual-state-on-shift t
-
-   ;; If non-nil, `J' and `K' move lines up and down when in visual mode.
-   ;; (default nil)
-   dotspacemacs-visual-line-move-text nil
-
-   ;; If non-nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
-   ;; (default nil)
-   dotspacemacs-ex-substitute-global nil
 
    ;; Name of the default layout (default "Default")
    dotspacemacs-default-layout-name "Default"
@@ -356,7 +343,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil then the last auto saved layouts are resumed automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts nil
+   dotspacemacs-auto-resume-layouts t
 
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
    ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -375,23 +362,6 @@ It should only modify the values of Spacemacs settings."
 
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
-
-   ;; If non-nil, `helm' will try to minimize the space it uses. (default nil)
-   dotspacemacs-helm-resize nil
-
-   ;; if non-nil, the helm header is hidden when there is only one source.
-   ;; (default nil)
-   dotspacemacs-helm-no-header nil
-
-   ;; define the position to display `helm', options are `bottom', `top',
-   ;; `left', or `right'. (default 'bottom)
-   dotspacemacs-helm-position 'bottom
-
-   ;; Controls fuzzy matching in helm. If set to `always', force fuzzy matching
-   ;; in all non-asynchronous sources. If set to `source', preserve individual
-   ;; source settings. Else, disable fuzzy matching in all sources.
-   ;; (default 'always)
-   dotspacemacs-helm-use-fuzzy 'always
 
    ;; If non-nil, the paste transient-state is enabled. While enabled, after you
    ;; paste something, pressing `C-j' and `C-k' several times cycles through the
@@ -422,7 +392,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup t
+   dotspacemacs-fullscreen-at-startup nil
 
    ;; If non-nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
@@ -436,7 +406,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
    ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
    ;; borderless fullscreen. (default nil)
-   dotspacemacs-undecorated-at-startup t
+   dotspacemacs-undecorated-at-startup nil
 
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
@@ -552,6 +522,20 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
 
+   ;; If non nil activate `clean-aindent-mode' which tries to correct
+   ;; virtual indentation of simple modes. This can interfer with mode specific
+   ;; indent handling like has been reported for `go-mode'.
+   ;; If it does deactivate it here.
+   ;; (default t)
+   dotspacemacs-use-clean-aindent-mode t
+
+   ;; If non-nil shift your number row to match the entered keyboard layout
+   ;; (only in insert state). Currently supported keyboard layouts are:
+   ;; `qwerty-us', `qwertz-de' and `querty-ca-fr'.
+   ;; New layouts can be added in `spacemacs-editing' layer.
+   ;; (default nil)
+   dotspacemacs-swap-number-row nil
+
    ;; Either nil or a number of seconds. If non-nil zone out after the specified
    ;; number of seconds. (default nil)
    dotspacemacs-zone-out-when-idle nil
@@ -559,7 +543,11 @@ It should only modify the values of Spacemacs settings."
    ;; Run `spacemacs/prettify-org-buffer' when
    ;; visiting README.org files of Spacemacs.
    ;; (default nil)
-   dotspacemacs-pretty-docs nil))
+   dotspacemacs-pretty-docs nil
+
+   ;; If nil the home buffer shows the full path of agenda items
+   ;; and todos. If non nil only the file name is shown.
+   dotspacemacs-home-shorten-agenda-source nil))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -886,147 +874,13 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(LaTeX-command
-   "latex-2016 -synctex=1 -shell-escape -interaction nonstopmode")
- '(TeX-command-list
-   (quote
-    (("TeX" "%(PDF)%(tex) %(file-line-error) %`%(extraopts) %S%(PDFout)%(mode)%' %t" TeX-run-TeX nil
-      (plain-tex-mode texinfo-mode ams-tex-mode)
-      :help "Run plain TeX")
-     ("LaTeX" "%`%l%(mode)%' %T" TeX-run-TeX nil
-      (latex-mode doctex-mode)
-      :help "Run LaTeX")
-     ("Makeinfo" "makeinfo %(extraopts) %t" TeX-run-compile nil
-      (texinfo-mode)
-      :help "Run Makeinfo with Info output")
-     ("Makeinfo HTML" "makeinfo %(extraopts) --html %t" TeX-run-compile nil
-      (texinfo-mode)
-      :help "Run Makeinfo with HTML output")
-     ("AmSTeX" "amstex-2016 %(PDFout) %`%(extraopts) %S%(mode)%' %t" TeX-run-TeX nil
-      (ams-tex-mode)
-      :help "Run AMSTeX")
-     ("ConTeXt" "%(cntxcom) --once --texutil %(extraopts) %(execopts)%t" TeX-run-TeX nil
-      (context-mode)
-      :help "Run ConTeXt once")
-     ("ConTeXt Full" "%(cntxcom) %(extraopts) %(execopts)%t" TeX-run-TeX nil
-      (context-mode)
-      :help "Run ConTeXt until completion")
-     ("BibTeX" "bibtex-2016 %s" TeX-run-BibTeX nil t :help "Run BibTeX")
-     ("Biber" "biber-2016 %s" TeX-run-Biber nil t :help "Run Biber")
-     ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer")
-     ("Print" "%p" TeX-run-command t t :help "Print the file")
-     ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command)
-     ("File" "%(o?)dvips %d -o %f " TeX-run-dvips t t :help "Generate PostScript file")
-     ("Dvips" "%(o?)dvips %d -o %f " TeX-run-dvips nil t :help "Convert DVI file to PostScript")
-     ("Dvipdfmx" "dvipdfmx %d" TeX-run-dvipdfmx nil t :help "Convert DVI file to PDF with dvipdfmx")
-     ("Ps2pdf" "ps2pdf-2016 %f" TeX-run-ps2pdf nil t :help "Convert PostScript file to PDF")
-     ("Glossaries" "makeglossaries-2016 %s" TeX-run-command nil t :help "Run makeglossaries to create glossary file")
-     ("Index" "makeindex-2016 %s" TeX-run-index nil t :help "Run makeindex to create index file")
-     ("upMendex" "upmendex-2016 %s" TeX-run-index t t :help "Run upmendex to create index file")
-     ("Xindy" "texindy-2016 %s" TeX-run-command nil t :help "Run xindy to create index file")
-     ("Check" "lacheck-2016 %s" TeX-run-compile nil
-      (latex-mode)
-      :help "Check LaTeX file for correctness")
-     ("ChkTeX" "chktex-2016 -v6 %s" TeX-run-compile nil
-      (latex-mode)
-      :help "Check LaTeX file for common mistakes")
-     ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document")
-     ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files")
-     ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files")
-     ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
+ '(LaTeX-command "latex -shell-escape")
  '(evil-want-Y-yank-to-eol nil)
- '(ispell-highlight-face (quote flyspell-incorrect))
- '(ispell-program-name "/usr/sepp/bin/aspell-0.60.6")
- '(mouse-wheel-progressive-speed nil)
- '(mouse-wheel-scroll-amount (quote (3 ((shift) . 1) ((control)))))
- '(org-format-latex-options
-   (quote
-    (:foreground default :background default :scale 1.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers
-                 ("begin" "$1" "$" "$$" "\\(" "\\["))))
- '(org-image-actual-width 400)
- '(org-latex-listings (quote minted))
- '(org-latex-packages-alist (quote (("" "minted" nil))))
- '(org-latex-pdf-process
-   (quote
-    ("latexmk-2016 -pdflatex='pdflatex -shell-escape -interaction nonstopmode' -pdf -bibtex -f %f")))
- '(org-latex-prefer-user-labels t)
- '(org-pandoc-menu-entry
-   (quote
-    ((52 "to html5 and open." org-pandoc-export-to-html5-and-open)
-     (36 "as html5." org-pandoc-export-as-html5)
-     (53 "to html5-pdf and open." org-pandoc-export-to-html5-pdf-and-open)
-     (37 "to html5-pdf." org-pandoc-export-to-html5-pdf)
-     (60 "to slideous and open." org-pandoc-export-to-slideous-and-open)
-     (44 "as slideous." org-pandoc-export-as-slideous)
-     (61 "to ms-pdf and open." org-pandoc-export-to-ms-pdf-and-open)
-     (45 "to ms-pdf." org-pandoc-export-to-ms-pdf)
-     (98 "to beamer-pdf and open." org-pandoc-export-to-beamer-pdf-and-open)
-     (66 "to beamer-pdf." org-pandoc-export-to-beamer-pdf)
-     (99 "to context-pdf and open." org-pandoc-export-to-context-pdf-and-open)
-     (67 "to context-pdf." org-pandoc-export-to-context-pdf)
-     (100 "to docbook5 and open." org-pandoc-export-to-docbook5-and-open)
-     (68 "as docbook5." org-pandoc-export-as-docbook5)
-     (101 "to epub3 and open." org-pandoc-export-to-epub3-and-open)
-     (69 "to epub3." org-pandoc-export-to-epub3)
-     (103 "to gfm buffer." org-pandoc-export-as-gfm)
-     (71 "as gfm." org-pandoc-export-as-gfm)
-     (104 "to html4 and open." org-pandoc-export-to-html4-and-open)
-     (72 "as html4." org-pandoc-export-as-html4)
-     (105 "to icml and open." org-pandoc-export-to-icml-and-open)
-     (73 "as icml." org-pandoc-export-as-icml)
-     (106 "to json and open." org-pandoc-export-to-json-and-open)
-     (74 "as json." org-pandoc-export-as-json)
-     (108 "to latex-pdf and open." org-pandoc-export-to-latex-pdf-and-open)
-     (76 "to latex-pdf." org-pandoc-export-to-latex-pdf)
-     (109 "to man and open." org-pandoc-export-to-man-and-open)
-     (77 "as man." org-pandoc-export-as-man)
-     (110 "to native and open." org-pandoc-export-to-native-and-open)
-     (78 "as native." org-pandoc-export-as-native)
-     (111 "to odt and open." org-pandoc-export-to-odt-and-open)
-     (79 "to odt." org-pandoc-export-to-odt)
-     (112 "to pptx and open." org-pandoc-export-to-pptx-and-open)
-     (80 "to pptx." org-pandoc-export-to-pptx)
-     (114 "to rtf and open." org-pandoc-export-to-rtf-and-open)
-     (82 "as rtf." org-pandoc-export-as-rtf)
-     (117 "to dokuwiki and open." org-pandoc-export-to-dokuwiki-and-open)
-     (85 "as dokuwiki." org-pandoc-export-as-dokuwiki)
-     (118 "to revealjs and open." org-pandoc-export-to-revealjs-and-open)
-     (86 "as revealjs." org-pandoc-export-as-revealjs)
-     (119 "to mediawiki and open." org-pandoc-export-to-mediawiki-and-open)
-     (87 "as mediawiki." org-pandoc-export-as-mediawiki)
-     (120 "to docx and open." org-pandoc-export-to-docx-and-open)
-     (88 "to docx." org-pandoc-export-to-docx)
-     (121 "to slidy and open." org-pandoc-export-to-slidy-and-open)
-     (89 "as slidy." org-pandoc-export-as-slidy)
-     (122 "to dzslides and open." org-pandoc-export-to-dzslides-and-open)
-     (90 "as dzslides." org-pandoc-export-as-dzslides))))
- '(org-ref-bibliography-notes "~/org_notes/literature-notes.org")
- '(org-ref-cite-onclick-function (quote org-ref-cite-click-helm))
- '(org-ref-get-pdf-filename-function (quote org-ref-get-zotero-pdf-filename))
- '(org-ref-insert-cite-function (quote org-ref-helm-insert-cite-link))
- '(org-ref-insert-label-function (quote org-ref-helm-insert-label-link))
- '(org-ref-insert-link-function (quote org-ref-helm-insert-cite-link))
- '(org-ref-insert-ref-function (quote org-ref-helm-insert-ref-link))
- '(org-ref-pdf-directory "~/org-ref/pdfs")
  '(package-selected-packages
    (quote
-    (wgrep-helm helm-fzf wgrep ox-ipynb jupyter websocket zmq php-mode company helm gnu-elpa-keyring-update org-plus-contrib let-alist evil-mc jinja2-mode company-ansible ansible-doc ansible xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help lsp-ui lsp-python-ms python helm-lsp dap-mode bui tree-mode cquery company-lsp ccls lsp-mode plantuml-mode insert-shebang graphviz-dot-mode flycheck-bashate fish-mode company-shell stickyfunc-enhance srefactor org-wild-notifier org-alert org-tanglesync yankpad engine-mode floobits highlight systemd pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv poporg ox-twbs flyspell-correct-helm flyspell-correct auto-dictionary mscgen-mode yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode wolfram-mode winum which-key web-mode web-beautify volatile-highlights virtualenvwrapper vi-tilde-fringe vala-snippets vala-mode uuidgen use-package unfill toc-org thrift tagedit synosaurus symon string-inflection stan-mode spaceline-all-the-icons smeargle slim-mode scss-mode scad-mode sass-mode restart-emacs rebox2 realgud rainbow-delimiters qml-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pkgbuild-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nov neotree nameless mwim move-text mmm-mode minimap matlab-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum logcat livid-mode live-py-mode link-hint kivy-mode json-navigator json-mode js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hoon-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gmail-message-mode gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flymd flycheck-rtags flycheck-pos-tip flycheck-hdl-questasim flx-ido fill-column-indicator figlet fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav elf-mode editorconfig edit-server ebuild-mode dumb-jump dotenv-mode doom-modeline disaster diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-rtags company-c-headers company-auctex company-anaconda column-enforce-mode clean-aindent-mode clang-format centered-cursor-mode avy-zap auto-yasnippet auto-highlight-symbol auto-compile arduino-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
- '(projectile-find-dir-includes-top-level t)
- '(projectile-mode t nil (projectile))
- '(projectile-project-root-files
-   (quote
-    (".projectile" "rebar.config" "project.clj" "build.boot" "deps.edn" "SConstruct" "pom.xml" "build.sbt" "gradlew" "build.gradle" ".ensime" "Gemfile" "requirements.txt" "setup.py" "pyproject.toml" "tox.ini" "composer.json" "Cargo.toml" "mix.exs" "stack.yaml" "info.rkt" "DESCRIPTION" "TAGS" "GTAGS" "configure.in" "configure.ac" "cscope.out")))
- '(projectile-project-root-files-bottom-up
-   (quote
-    (".projectile" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".projectile")))
- '(projectile-project-root-files-functions (quote (projectile-root-bottom-up)))
- '(projectile-project-root-files-top-down-recurring (quote (".projectile" ".svn" "CVS" "Makefile")))
- '(projectile-switch-project-action (quote helm-projectile))
+    (yapfify yaml-mode xterm-color wolfram-mode wgrep-helm wgrep web-mode web-beautify vterm virtualenvwrapper vala-snippets vala-mode thrift terminal-here tagedit systemd synosaurus stickyfunc-enhance stan-mode srefactor slim-mode shell-pop scss-mode scad-mode sass-mode riscv-mode qml-mode pytest pyenv-mode py-isort pug-mode prettier-js poporg pocket-reader org-web-tools rainbow-identifiers ov pocket-lib kv plantuml-mode pkgbuild-mode pippel pipenv pyvenv pip-requirements phpunit phpcbf php-extras php-auto-yasnippets pandoc-mode ox-twbs ox-pandoc ospl-mode org-ref pdf-tools key-chord ivy tablist nov esxml nodejs-repl multi-term mscgen-mode mmm-mode minimap matlab-mode markdown-toc lsp-python-ms lsp-pyright logcat livid-mode skewer-mode live-py-mode json-navigator hierarchy json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc jinja2-mode insert-shebang importmagic epc ctable concurrent impatient-mode simple-httpd hoon-mode helm-rtags helm-pydoc helm-fzf helm-css-scss helm-bibtex bibtex-completion biblio parsebib biblio-core haml-mode graphviz-dot-mode google-c-style gmail-message-mode ham-mode html-to-markdown gh-md geben flyspell-correct-helm flyspell-correct flymd flycheck-ycmd flycheck-rtags flycheck-bashate fish-mode figlet eshell-z eshell-prompt-extras esh-help engine-mode emmet-mode elf-mode edit-server ebuild-mode drupal-mode disaster dap-mode posframe bui cython-mode csv-mode cpp-auto-include company-ycmd ycmd request-deferred deferred company-web web-completion-data company-shell company-rtags rtags company-reftex company-phpactor phpactor composer php-runtime company-php ac-php-core xcscope php-mode company-c-headers company-auctex company-ansible company-anaconda centaur-tabs cdlatex ccls blacken avy-zap auto-dictionary auctex arduino-mode ansible-doc ansible anaconda-mode pythonic adaptive-wrap tabbar helm-gtags ggtags switch-buffer-functions yasnippet-snippets unfill treemacs-magit smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim magit-svn magit-section magit-gitflow magit-popup lsp-ui lsp-treemacs lsp-origami origami htmlize helm-org-rifle helm-lsp lsp-mode markdown-mode dash-functional helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy flycheck-pos-tip pos-tip flycheck-hdl-questasim evil-org evil-magit magit git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-persp treemacs-icons-dired toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
  '(spacemacs-theme-custom-colors (quote ((base . "#ffffff"))))
- '(verilog-indent-level-behavioral 2)
- '(verilog-indent-level-declaration 2)
- '(verilog-indent-level-directive 2)
- '(verilog-indent-level-module 2))
+ '(tabbar-separator (quote (0.5))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
