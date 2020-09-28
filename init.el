@@ -106,7 +106,7 @@ It should only modify the values of Spacemacs settings."
    ;; Name of executable file pointing to emacs 27+. This executable must be
    ;; in your PATH.
    ;; (default "emacs")
-   dotspacemacs-emacs-pdumper-executable-file "emacs"
+   dotspacemacs-emacs-pdumper-executable-file "emacs-27.1"
 
    ;; Name of the Spacemacs dump file. This is the file will be created by the
    ;; portable dumper in the cache directory under dumps sub-directory.
