@@ -18,8 +18,8 @@
                              :commit "master"))
     company
     indent-guide
-    helm-gtags
-    ggtags
+    ;; helm-gtags
+    ;; ggtags
     flycheck
     (flycheck-hdl-questasim :location (recipe
                                        :fetcher github
@@ -32,7 +32,7 @@
     :init
     (progn
       (spacemacs/declare-prefix-for-mode 'verilog-mode "ma" "auto")
-      (spacemacs/declare-prefix-for-mode 'verilog-mode "mg" "gtags")
+      ;; (spacemacs/declare-prefix-for-mode 'verilog-mode "mg" "gtags")
       (spacemacs/set-leader-keys-for-major-mode 'verilog-mode
         "=" 'verilog-pretty-expr
         "TAB" 'verilog-pretty-declarations
@@ -62,9 +62,9 @@
   (add-hook 'verilog-mode-hook 'indent-guide-mode))
 
 ;;Enable gtags form verilog-mode
-(defun verilog/post-init-helm-gtags ()
-  (spacemacs/helm-gtags-define-keys-for-mode 'verilog-mode)
-  (spacemacs|define-jump-handlers 'verilog-mode))
+;; (defun verilog/post-init-helm-gtags ()
+;;   (spacemacs/helm-gtags-define-keys-for-mode 'verilog-mode)
+;;   (spacemacs|define-jump-handlers 'verilog-mode))
 
 ;;Enable verilog-verilator in flycheck if available
 (defun verilog/pre-init-flycheck()
@@ -80,8 +80,8 @@
         "sa" 'flycheck-hdl-questasim-analyze-workdir)))
   (add-hook 'verilog-mode-hook 'flycheck-mode))
 
-(defun verilog/post-init-ggtags ()
-  (add-hook 'verilog-mode-hook #'spacemacs/ggtags-mode-enable))
+;; (defun verilog/post-init-ggtags ()
+;;   (add-hook 'verilog-mode-hook #'spacemacs/ggtags-mode-enable))
 
 (defun verilog/post-init-company ()
   (spacemacs|add-company-backends

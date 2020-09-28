@@ -690,6 +690,9 @@ emacs users to use the editor."
 
   ;; Enable transient-mark-mode (fixes issue that marked region is not visible when loading pdumped emacs)
   (transient-mark-mode 1)
+
+  ;; Enable dumb-jump-xref
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
