@@ -46,7 +46,7 @@
   that goes well beyond simple text editing. While both of them might look
   pretty dated in their default configuration (you are right now using a heavily
   customized version of Emacs) they are extremely versatile and, if correctly
-  configured provide, provide all of the features one might expect from a modern
+  configured, provide all of the features one might expect from a modern
   IDE like syntax highlighing/checking, code completion, version control
   integration and much more with support for almost any programming language on
   planet earth. Having gone through decades of development they both made text
@@ -387,7 +387,7 @@
    shortcut]] to solve the task.
 
    You can use multiple cursors by either marking consecutive lines you want to
-   edit or by marking a search in fron of each occurence of the word you want a
+   edit or by marking a search string in front of each occurence you want a
    cursor to be instantiated.
 
    For the first version, switch to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Rectangles.html][rectancular selection]] mode (~C-x SPC~) and
