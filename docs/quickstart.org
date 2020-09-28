@@ -277,22 +277,11 @@
 ** Jumping to Submodule Definition
    One of the most commonly used features when navigating a larger HDL project
    is the ability to jump to the definition of a submodule. This customization
-   provides leverages GNU Globals, a source code tagging software to do the
-   heavy lifting. In the VLSI1 setup, everything is already setup to use the
-   feature, however if you want to use it on your own computer you have to
-   install [[https://github.com/universal-ctags/ctags][universal ctags]] (thats not the normal CTAGS you get from your default
-   software repository, the default exuberant ctags package doesn't support
-   SystemVerilog) and install [[https://www.gnu.org/software/global/][GNU Global]] with support for the universal CTAGS
-   plug-in parser. The following [[https://develop.spacemacs.org/layers/+tags/gtags/README.html][webpage]] explains the setup in detail.
-
-   Once everything is installed you can use the GTAGS extension by first
-   generating an index of all submodules within your project. To do so, press
-   ~M-m m g C~ (capital 'C'!, within a SystemVerilog file) and choose the root
-   directory of your project. GTAG will then automatically traverse every file
-   within your project and generate an index of all recognized symbols. After
-   generating the index you can then jump to submodule definitions by placing
-   your cursor on top of a module name and pressing ~M-.~. To jump pack to the
-   previous submodule press ~M-m m g p~.
+   leverages a package called dumb-jump which contains a collection of regular
+   expressions to automatically jump to definitions in a number of different
+   languages. To jump to a submodule place your cursor on top of the module name
+   and press ~M-.~. To go back to the previous module after jumping, press
+   ~M-,~.
 * General Tipps and Tricks
 ** Quick navigation with the cursor
    Spacemacs comes with pre-installed package called Avy that greatly
