@@ -13,7 +13,7 @@
 (defconst verilog-packages
   '((verilog-mode :location (recipe
                              :fetcher github
-                             :repo "veripool/verilog-mode"
+                             :repo "meggiman/verilog-mode"
                              :min-version 2
                              :commit "master"))
     company
